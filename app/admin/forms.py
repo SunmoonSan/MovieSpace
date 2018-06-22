@@ -123,7 +123,7 @@ class AdminForm(FlaskForm):
     role_id = SelectField(
         label='所属角色',
         coerce=int,
-        choices=[(v.id, v,name) for v in Role.query.all()],
+        choices=[(v.id, v.name) for v in Role.query.all()],
         render_kw={
             'class': 'form-control'
         }

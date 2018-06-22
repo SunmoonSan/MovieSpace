@@ -35,7 +35,7 @@ def admin_login():
 
         if not admin.check_pwd(data['pwd']):
             flash('密码错误', 'err')
-            return redirect(url_for('admin_index'))
+            return redirect(url_for('admin.index'))
 
         session['admin'] = data['account']
         session['admin_id'] = admin.id
@@ -47,7 +47,7 @@ def admin_login():
 
         db.session.add(adminlog)
         db.session.commit()
-        return redirect(url_for('index.'))
+        return redirect(url_for('admin.index'))
     return render_template('admin/login.html', form=form)
 
 
@@ -141,6 +141,57 @@ def role_add():
     return render_template('admin/role_add.html', form=form)
 
 
+@admin.route('/role/list/<int:page>/', methods=['GET'])
+def role_list(page=None):
+    """
+    角色列表
+    :param page:
+    :return:
+    """
+    if page is None:
+        page = 1
+    page_data = Role.query.order_by(
+        Role.addtime.desc()
+    ).paginate(page=page, per_page=2)
+    return render_template('admin/role_list.html', page_data=page_data)
+
+
+@admin.route('/role/del/<int:id>/', methods=['GET'])
+def role_del(id=None):
+    """
+    删除角色
+    :param id:
+    :return:
+    """
+    role = Role.query.filter_by(id=id).first_or_404()
+    db.session.delete(role)
+    db.session.commit()
+    flash('删除角色成功!', 'ok')
+    return redirect(url_for('admin.role_list', page=1))
+
+
+@admin.route('/role/edit/<int:id>/', methods=['GET', 'POST'])
+def role_edit(id=None):
+    """
+    编辑角色
+    :param id:
+    :return:
+    """
+    form = RoleForm()
+    role = Role.query.get_or_404(id)
+    if request.method == 'GET':
+        auths = role.auths
+        form.auths.data = list(map(lambda v: int(v), auths.split(',')))
+    if form.validate_on_submit():
+        data = form.data
+        role.name = data['name']
+        role.auths = ','.join(map(lambda v: str(v), data['auths']))
+        db.session.add(role)
+        db.session.commit()
+        flash('修改角色成功!', 'ok')
+    return render_template('admin/role_edit.html', form=form, role=role)
+
+
 @admin.route('/tag/add/', methods=['GET', 'POST'])
 def tag_add():
     """
@@ -179,6 +230,7 @@ def admin_add():
     :return:
     """
     form = AdminForm()
+    print(form)
     if form.validate_on_submit():
         data = form.data
         admin = Admin(
