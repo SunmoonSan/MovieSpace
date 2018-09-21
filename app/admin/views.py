@@ -2,14 +2,31 @@
 # -*- coding: utf-8 -*-
 # @desc  : Created by San on 2018-06-21 22:16
 # @site  : https://github.com/SunmoonSan
+import os
+import uuid
+from datetime import datetime
+
 from flask import Blueprint, render_template, flash, redirect, url_for, session, request, g
 from werkzeug.security import generate_password_hash
+from werkzeug.utils import secure_filename
 
-from app.admin.forms import LoginForm, TagForm, AdminForm, AuthForm, RoleForm
+from app import app
+from app.admin.forms import LoginForm, TagForm, AdminForm, AuthForm, RoleForm, MovieForm
 from app.dbs import db
-from app.models import Admin, Adminlog, Tag, Oplog, Auth, Role
+from app.models import Admin, Adminlog, Tag, Oplog, Auth, Role, Movie
 
 admin = Blueprint('admin', __name__, url_prefix='/admin')
+
+
+def change_filename(filename):
+    """
+    修改文件名称
+    :param filename:
+    :return:
+    """
+    fileinfo = os.path.splitext(filename)
+    filename = datetime.now().strftime("%Y%m%d%H%M%S") + str(uuid.uuid4().hex) + fileinfo[-1]
+    return filename
 
 
 @admin.route('/')
@@ -71,7 +88,7 @@ def auth_add():
 
 
 @admin.route('/auth/list/<int:page>/', methods=['GET'])
-@admin.route('/auth/list/', methods=['GET'])
+# @admin.route('/auth/list/', methods=['GET'])
 def auth_list(page=None):
     """
     权限列表
@@ -218,9 +235,163 @@ def tag_add():
         db.session.add(oplog)
         db.session.commit()
         flash("标签添加成功", 'ok')
-        redirect(url_for('tag_add'))
+        return redirect(url_for('admin.tag_add'))
 
     return render_template('admin/tag_add.html', form=form)
+
+
+@admin.route('/tag/edit/<int:id>/', methods=['GET', 'POST'])
+def tag_edit(id=None):
+    """
+    标签编辑
+    :param id:
+    :return:
+    """
+    form = TagForm()
+    form.submit.label.text = '修改'
+    tag = Tag.query.get_or_404(id)
+    if form.validate_on_submit():
+        data = form.data
+        tag_count = Tag.query.filter_by(name=data['name']).count()
+        if tag.name != data['name'] and tag_count == 1:
+            flash('标签已经存在', 'err')
+            return redirect(url_for('admin.tag_edit', id=tag.id))
+        tag.name = data['name']
+        db.session.add(tag)
+        db.session.commit()
+        flash('标签修改成功!', 'ok')
+        redirect(url_for('admin.tag_edit', id=tag.id))
+    return render_template('admin/tag_edit.html', form=form, tag=tag)
+
+
+@admin.route('/tag/list/<int:page>/', methods=['GET'])
+def tag_list(page=None):
+    """
+    标签列表
+    :param page:
+    :return:
+    """
+    if page is None:
+        page = 1
+    page_data = Tag.query.order_by(
+        Tag.addtime.desc()
+    ).paginate(page=page, per_page=2)
+    return render_template('admin/tag_list.html', page_data=page_data)
+
+
+@admin.route('/tag/del/<int:id>/', methods=['GET'])
+def tag_del(id=None):
+    """
+    标签删除
+    :param id:
+    :return:
+    """
+    tag = Tag.query.filter_by(id=id).first_or_404()
+    db.session.delete(tag)
+    db.session.commit()
+    flash('标签删除成功!', 'ok')
+    return redirect(url_for('admin.tag_list', page=1))
+
+
+@admin.route('/movie/add/', methods=['GET', 'POST'])
+def movie_add():
+    """
+    添加电影页面
+    :return:
+    """
+    form = MovieForm()
+    if form.validate_on_submit():
+        data = form.data
+        file_url = secure_filename(form.url.data.filename)
+        file_logo = secure_filename(form.logo.data.filename)
+        if not os.path.exists(app.config['UP_DIR']):
+            os.makedirs(app.config['UP_DIR'])
+            os.chmod(app.config['UP_DIR'], 6)
+        url = change_filename(file_url)
+        logo = change_filename(file_logo)
+
+        form.url.data.save(app.config['UP_DIR'] + url)
+        form.logo.data.save(app.config['UP_DIR'] + logo)
+
+        movie = Movie(
+            title=data['title'],
+            url = url,
+            info=data['info'],
+            logo=logo,
+            star=int(data['star']),
+            playnum=0,
+            commentnum=0,
+            tag_id=int(data['tag_id']),
+            area=data['area'],
+            release_time=data['release_time'],
+            length=data['length']
+        )
+
+        db.session.add(movie)
+        db.session.commit()
+        flash('添加电影成功!', 'ok')
+        return redirect(url_for('admin.movie_add'))
+    return render_template('admin/movie_add.html', form=form)
+
+
+@admin.route('/movie/list/<int:page>/', methods=['GET'])
+def movie_list(page=None):
+    """
+    电影列表页面
+    :param page:
+    :return:
+    """
+    if page is None:
+        page = 1
+
+    page_data = Movie.query.join(Tag).filter(
+        Tag.id==Movie.tag_id
+    ).order_by(
+        Movie.addtime.desc()
+    ).paginate(page=page, per_page=1)
+    return render_template('admin/movie_list.html', page_data=page_data)
+
+
+@admin.route('/movie/<int:id>/', methods=['GET', 'POST'])
+def movie_edit():
+    """
+    编辑电影页面
+    :return:
+    """
+    form = MovieForm()
+    form.url.validators = []
+    form.logo.validators = []
+    movie = Movie.query.get_or_404(int(id))
+    if request.method == 'GET':
+        form.info.data = movie.info
+        form.tag_id.data = movie.tag_id
+        form.star.data = movie.star
+    if form.validate_on_submit():
+        data = form.data
+        movie_count = Movie.query.filter_by(title=data['title']).count()
+        if movie_count == 1 and movie.title != data['title']:
+            flash('片名已存在!', 'err')
+            return redirect(url_for('admin.movie_edit', id=id))
+
+        if not os.path.exists(app.config['UP_DIR']):
+            os.makedirs(app.config['UP_DIR'])
+            os.chmod(app.config['UP_DIR', 6])
+
+        if form.url.data != "":
+            file_url = secure_filename(form.url.data.filename)
+            movie.url = change_filename(file_url)
+            form.url.data.save(app.config['UP_DIR'] + movie.url)
+
+        if form.logo.data != "":
+            file_logo = secure_filename(form.data.filename)
+            movie.logo = change_filename(file_logo)
+            form.logo.data.save(app.config['UP_DIR'] + movie.url)
+
+
+
+
+
+
 
 
 @admin.route('/admin/add/', methods=['GET', 'POST'])
