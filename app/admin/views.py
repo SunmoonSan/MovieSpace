@@ -51,7 +51,7 @@ def admin_login():
         admin = Admin.query.filter_by(name=data['account']).first()
 
         if not admin.check_pwd(data['pwd']):
-            flash('密码错误', 'err')
+            flash('密码错误', 'error')
             return redirect(url_for('admin.index'))
 
         session['admin'] = data['account']
