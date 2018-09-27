@@ -18,7 +18,7 @@
         <a href=""><b>微电影管理系统</b></a>
     </div>
     <div class="login-box-body">
-        {% for message in get_flashed_messages %}
+        {% for message in get_flashed_messages(category_filter=["error"]) %}
             <p class="login-box-msg" style="color: red">{{ message }}</p>
         {% endfor %}
         <form action="" method="post" id="form-data">

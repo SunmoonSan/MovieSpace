@@ -1,18 +1,17 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>微电影管理系统</title>
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    <link rel="shortcut icon" href="{{ url_for('static', filename='base/images/logo.png') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='admin/bootstrap/css/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='fonts/css/font-awesome.min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='ionicons/css/ionicons.min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='admin/dist/css/AdminLTE.min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='admin/dist/css/skins/_all-skins.min.css') }}">
-    <link rel="stylesheet" type="text/css"
-          href="{{ url_for('static', filename='admin/plugins/datepicker/datepicker3.css') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='base/images/logo.png') }} ">
+    <link rel="stylesheet" href="../static/admin/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/fonts/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../static/ionicons/css/ionicons.min.css">
+    <link rel="stylesheet" href="../static/admin/dist/css/AdminLTE.min.css">
+    <link rel="stylesheet" href="../static/admin/dist/css/skins/_all-skins.min.css">
+    <link rel="stylesheet" type="text/css" href="../static/admin/plugins/datepicker/datepicker3.css">
     <style>
         * {
             font-family: "Microsoft YaHei";
@@ -38,7 +37,7 @@
             <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
                 <span class="sr-only">下拉菜单</span>
             </a>
-            <div class="navbar-custom-menu">admin/dist/img/user2-160x160.jpg
+            <div class="navbar-custom-menu">
                 <ul class="nav navbar-nav">
                     <li class="dropdown user user-menu">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -295,41 +294,15 @@
         <section class="content-header">
             <h1>微电影管理系统</h1>
             <ol class="breadcrumb">
-                <li><a href="#"><i class="fa fa-dashboard"></i> 标签管理</a></li>
-                <li class="active">添加标签</li>
+                <li><a href="#"><i class="fa fa-dashboard"></i> 首页</a></li>
+                <li class="active">控制面板</li>
             </ol>
         </section>
         <section class="content" id="showcontent">
             <div class="row">
-                <div class="col-md-12">
-                    <div class="box box-primary">
-                        <div class="box-header with-border">
-                            <h3 class="box-title">添加标签</h3>
-                        </div>
-                        <form role="form", method="post">
-                            <div class="box-body">
-                                <div class="form-group">
-                                    <label for="input_name">{{ form.name.label }}</label>
-{#                                    <input type="text" class="form-control" id="input_name" placeholder="请输入标签名称！">#}
-                                    {{ form.name }}
-                                    {% for error in form.name.errors %}
-                                        <div class="col-md-12">
-                                        {{ error }}
-                                        <font style="color: red;">{{ error }}</font>
-                                        </div>
-                                    {% endfor %}
-
-
-                                </div>
-                            </div>
-                            <div class="box-footer">
-{#                                <button type="submit" class="btn btn-primary">添加</button>#}
-                                {{ form.csrf_token }}
-                                {{ form.submit }}
-                            </div>
-                        </form>
-                    </div>
-                </div>
+                {% block content %}
+                
+                {% endblock %}
             </div>
         </section>
         <!--内容-->
@@ -342,16 +315,47 @@
     </footer>
     <div class="control-sidebar-bg"></div>
 </div>
-<script src="{{ url_for('static', filename='admin/plugins/jQuery/jQuery-2.2.0.min.js') }}"></script>
-<script src="{{ url_for('static', filename='admin/bootstrap/js/bootstrap.min.js') }}"></script>
-<script src="{{ url_for('static', filename='admin/plugins/slimScroll/jquery.slimscroll.min.js') }}"></script>
-<script src="{{ url_for('static', filename='admin/plugins/fastclick/fastclick.js') }}"></script>
-<script src="{{ url_for('static', filename='admin/dist/js/app.min.js') }}"></script>
-<script src="{{ url_for('static', filename='admin/dist/js/demo.js') }}"></script>
+<script src="../static/admin/plugins/jQuery/jQuery-2.2.0.min.js"></script>
+<script src="../static/admin/bootstrap/js/bootstrap.min.js"></script>
+<script src="../static/admin/plugins/slimScroll/jquery.slimscroll.min.js"></script>
+<script src="../static/admin/plugins/fastclick/fastclick.js"></script>
+<script src="../static/admin/dist/js/app.min.js"></script>
+<script src="../static/admin/dist/js/demo.js"></script>
 <script src="//cdn.bootcss.com/holder/2.9.4/holder.min.js"></script>
-<script src="{{ url_for('static', filename='admin/plugins/datepicker/bootstrap-datepicker.js') }}"></script>
-<script src="{{ url_for('static', filename='admin/plugins/datepicker/locales/bootstrap-datepicker.zh-CN.js') }}" charset="UTF-8"></script>
+<script src="../static/admin/plugins/datepicker/bootstrap-datepicker.js"></script>
+<script src="../static/admin/plugins/datepicker/locales/bootstrap-datepicker.zh-CN.js" charset="UTF-8"></script>
+<script src="../static/js/echarts.min.js"></script>
+<script>
+    var myChart = echarts.init(document.getElementById('meminfo'));
+    option = {
+        backgroundColor: "white",
+        tooltip: {
+            formatter: "{a} <br/>{b} : {c}%"
+        },
+        toolbox: {
+            feature: {
+                restore: {},
+                saveAsImage: {}
+            }
+        },
+        series: [{
+            name: '内存使用率',
+            type: 'gauge',
+            detail: {
+                formatter: '{value}%'
+            },
+            data: [{
+                value: 50,
+                name: '内存使用率'
+            }]
+        }]
+    };
+    setInterval(function () {
+        option.series[0].data[0].value = (Math.random() * 100).toFixed(2) - 0;
+        myChart.setOption(option, true);
+    }, 2000);
 
+</script>
 
 </body>
 </html>
