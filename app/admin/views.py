@@ -275,7 +275,7 @@ def tag_list(page=None):
         page = 1
     page_data = Tag.query.order_by(
         Tag.addtime.desc()
-    ).paginate(page=page, per_page=2)
+    ).paginate(page=page, per_page=10)
     return render_template('admin/tag_list.html', page_data=page_data)
 
 
@@ -315,7 +315,7 @@ def movie_add():
 
         movie = Movie(
             title=data['title'],
-            url = url,
+            url=url,
             info=data['info'],
             logo=logo,
             star=int(data['star']),
@@ -345,7 +345,7 @@ def movie_list(page=None):
         page = 1
 
     page_data = Movie.query.join(Tag).filter(
-        Tag.id==Movie.tag_id
+        Tag.id == Movie.tag_id
     ).order_by(
         Movie.addtime.desc()
     ).paginate(page=page, per_page=1)
@@ -386,12 +386,6 @@ def movie_edit():
             file_logo = secure_filename(form.data.filename)
             movie.logo = change_filename(file_logo)
             form.logo.data.save(app.config['UP_DIR'] + movie.url)
-
-
-
-
-
-
 
 
 @admin.route('/admin/add/', methods=['GET', 'POST'])

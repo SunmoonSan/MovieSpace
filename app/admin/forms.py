@@ -257,7 +257,7 @@ class TagForm(FlaskForm):
     name = StringField(
         label='名称',
         validators=[
-            DataRequired("标签名不能为空!")
+            DataRequired("标签名不能为空!"),
         ],
         description='标签',
         render_kw={
@@ -268,7 +268,7 @@ class TagForm(FlaskForm):
     )
 
     submit = SubmitField(
-        '添加',
+        label='添加',
         render_kw={
             'class': 'btn btn-primary'
         }
@@ -301,7 +301,7 @@ class AuthForm(FlaskForm):
     )
 
     submit = SubmitField(
-        '编辑',
+        label='编辑',
         render_kw={
             'class': 'btn btn-primary'
         }
