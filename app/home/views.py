@@ -6,7 +6,7 @@ import uuid
 
 from flask import render_template, app, Blueprint, flash, redirect, url_for, session, request
 
-from app.admin.forms import RegisterForm, LoginForm
+from app.home.forms import RegisterForm, LoginForm
 from app.dbs import db
 from app.models import Tag, User, Userlog
 
