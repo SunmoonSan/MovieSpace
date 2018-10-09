@@ -3,7 +3,7 @@
 # @desc  : Created by San on 2018-09-19 06:59
 # @site  : https://github.com/SunmoonSan
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
+from wtforms import StringField, PasswordField, SubmitField, FileField, TextField, TextAreaField
 from wtforms.validators import DataRequired, Email, Regexp, EqualTo, ValidationError
 
 from app.models import User
@@ -134,3 +134,52 @@ class LoginForm(FlaskForm):
         }
     )
 
+
+class UserProfileForm(FlaskForm):
+    name = StringField(
+        label='昵称',
+        description='帐号',
+        render_kw={
+            'class': 'form-control',
+            'placeholder': '昵称'
+        }
+    )
+
+    email = StringField(
+        label='邮箱',
+        description='邮箱',
+        render_kw={
+            'class': 'form-control',
+            'placeholder': '邮箱'
+        }
+    )
+
+    phone = StringField(
+        label='手机号码',
+        description='邮箱',
+        render_kw={
+            'class': 'form-control',
+            'placeholder': '手机号码'
+        }
+    )
+
+    info = TextAreaField(
+        label='简介',
+        description='简介',
+        render_kw={
+            'class': 'form-control',
+            'rows': 10
+        }
+    )
+
+    face = FileField(
+        label="头像",
+        description="头像",
+    )
+
+    submit = SubmitField(
+        label='保存修改',
+        render_kw={
+            'class': 'btn btn-success'
+        }
+    )

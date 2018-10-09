@@ -5,8 +5,9 @@
 import uuid
 
 from flask import render_template, app, Blueprint, flash, redirect, url_for, session, request
+from werkzeug.security import generate_password_hash
 
-from app.home.forms import RegisterForm, LoginForm
+from app.home.forms import RegisterForm, LoginForm, UserProfileForm
 from app.dbs import db
 from app.models import Tag, User, Userlog
 
@@ -24,13 +25,15 @@ def index():
 @home.route('/login/', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
-    if form.is_submitted():
+    print(form)
+    if form.validate_on_submit():
         data = form.data
+        print(data)
         user = User.query.filter_by(name=data['name']).first()
         if user:
             if not user.check_pwd(data['pwd']):
                 flash('密码错误!', 'error')
-                return redirect(url_for('login'))
+                return redirect(url_for('home.login'))
         else:
             flash('账户不存在!', 'error')
             return redirect(url_for('home.login'))
@@ -40,7 +43,7 @@ def login():
 
         userlog = Userlog(
             user_id=user.id,
-            ip = request.remote_addr
+            ip=request.remote_addr
         )
         db.session.add(userlog)
         db.session.commit()
@@ -66,7 +69,7 @@ def register():
             name=data['name'],
             email=data['email'],
             phone=data['phone'],
-            pwd=data['password'],
+            pwd=generate_password_hash(data['pwd']),
             uuid=uuid.uuid4().hex
         )
 
@@ -79,28 +82,38 @@ def register():
 
 @home.route('/user/')
 def user():
-        return render_template('home/user.html')
+    form = UserProfileForm()
+    if form.validate_on_submit():
+        print(form.data)
+        pass
+    return render_template('home/user.html', form=form)
+
 
 @home.route('/pwd/')
 def pwd():
-        return render_template('home/pwd.html')
+    return render_template('home/pwd.html')
+
 
 @home.route('/comments/')
 def comments():
-        return render_template('home/comments.html')
+    return render_template('home/comments.html')
+
 
 @home.route('/loginlog/')
 def loginlog():
-        return render_template('home/loginlog.html')
+    return render_template('home/loginlog.html')
+
 
 @home.route('/movielog/')
 def moviecol():
-        return render_template('home/moviecol.html')
+    return render_template('home/moviecol.html')
+
 
 @home.route('/animation/')
 def animation():
-        return render_template('home/animation.html')
+    return render_template('home/animation.html')
+
 
 @home.route('/search/')
 def search():
-        return render_template('home/search.html')
+    return render_template('home/search.html')
