@@ -135,6 +135,7 @@ class LoginForm(FlaskForm):
     )
 
 
+# 用户个人中心表单
 class UserProfileForm(FlaskForm):
     name = StringField(
         label='昵称',
@@ -179,6 +180,39 @@ class UserProfileForm(FlaskForm):
 
     submit = SubmitField(
         label='保存修改',
+        render_kw={
+            'class': 'btn btn-success'
+        }
+    )
+
+
+class PasswordForm(FlaskForm):
+    old_password = StringField(
+        label='旧密码',
+        validators=[
+            DataRequired('密码不能为空!')
+        ],
+        description='旧密码',
+        render_kw={
+            'class': 'form-control',
+            'placeholder': '旧密码'
+        }
+    )
+
+    new_password = StringField(
+        label='新密码',
+        validators=[
+            DataRequired('密码不能为空!')
+        ],
+        description='新密码',
+        render_kw={
+            'class': 'form-control',
+            'placeholder': '旧密码'
+        }
+    )
+
+    submit = SubmitField(
+        label='修改',
         render_kw={
             'class': 'btn btn-success'
         }

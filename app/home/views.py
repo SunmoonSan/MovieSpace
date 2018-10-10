@@ -7,7 +7,7 @@ import uuid
 from flask import render_template, app, Blueprint, flash, redirect, url_for, session, request
 from werkzeug.security import generate_password_hash
 
-from app.home.forms import RegisterForm, LoginForm, UserProfileForm
+from app.home.forms import RegisterForm, LoginForm, UserProfileForm, PasswordForm
 from app.dbs import db
 from app.models import Tag, User, Userlog
 
@@ -25,7 +25,6 @@ def index():
 @home.route('/login/', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
-    print(form)
     if form.validate_on_submit():
         data = form.data
         print(data)
@@ -80,18 +79,33 @@ def register():
     return render_template('home/register.html', form=form)
 
 
-@home.route('/user/')
+@home.route('/user/', methods=['GET', 'POST'])
 def user():
     form = UserProfileForm()
+    user_id = session['id']
+    user = User.query.filter_by(id=user_id).first()
+    print(user)
+    if form.validate_on_submit():
+        data = form.data
+
+        user.name = data['name']
+        user.email = data['email']
+        user.phone = data['phone']
+        user.info = data['info']
+
+        db.session.add(user)
+        db.session.commit()
+        flash('用户信息更新成功!', 'ok')
+        return redirect(url_for('home.user'))
+    return render_template('home/user.html', form=form, user=user)
+
+
+@home.route('/pwd/', methods=['GET', 'POST'])
+def pwd():
+    form = PasswordForm()
     if form.validate_on_submit():
         print(form.data)
-        pass
-    return render_template('home/user.html', form=form)
-
-
-@home.route('/pwd/')
-def pwd():
-    return render_template('home/pwd.html')
+    return render_template('home/pwd.html', form=form)
 
 
 @home.route('/comments/')
