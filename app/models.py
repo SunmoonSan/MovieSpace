@@ -14,16 +14,17 @@ class User(db.Model):
     __tablename__ = 'user'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), unique=True)  # 昵称
+    name = db.Column(db.String(100), unique=True)  # 昵称, 唯一约束
     pwd = db.Column(db.String(100))  # 密码
-    email = db.Column(db.String(100), unique=True)  # 邮箱
-    phone = db.Column(db.String(11), unique=True)  # 手机号
+    email = db.Column(db.String(100), unique=True)  # 邮箱, 唯一约束
+    phone = db.Column(db.String(11), unique=True)  # 手机号, 唯一约束
     info = db.Column(db.Text)  # 个性简介
-    face = db.Column(db.String(255), unique=True)  # 头像
-    addtime = db.Column(db.DateTime, index=True, default=datetime.now())  # 添加时间
+    face = db.Column(db.String(255), unique=True)  # 头像, 唯一约束
+
+    addtime = db.Column(db.DateTime, index=True, default=datetime.utcnow())  # 添加时间
     uuid = db.Column(db.String(255), unique=True)  # 唯一标识符
 
-    userlogs = db.relationship('Userlog', backref='user')
+    userlogs = db.relationship('Userlog', backref='user')  # 会员日志外键关系
     comments = db.relationship('Comment', backref='user')
     moviecols = db.relationship('Moviecol', backref='user')
 
@@ -34,16 +35,18 @@ class User(db.Model):
         return check_password_hash(self.pwd, pwd)
 
 
+# 会员登录日志
 class Userlog(db.Model):
     __tablename__ = 'userlog'
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    ip = db.Column(db.String(100))
-    addtime = db.Column(db.DateTime, index=True, default=datetime.now())
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))  # 外键
+    ip = db.Column(db.String(100))  # IP地址
+
+    addtime = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
     def __repr__(self):
-        return "<User %r>" % self.id
+        return "<Userlog %r>" % self.id
 
 
 # 标签
@@ -51,8 +54,8 @@ class Tag(db.Model):
     __tablename__ = 'tag'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), unique=True)
-    addtime = db.Column(db.DateTime, index=True, default=datetime.now())
+    name = db.Column(db.String(100), unique=True)  # 标签名称
+    addtime = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
     movies = db.relationship('Movie', backref='tag')
 
@@ -65,19 +68,19 @@ class Movie(db.Model):
     __tablename__ = 'movie'
 
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(255), unique=True)
-    url = db.Column(db.String(255), unique=True)
-    info = db.Column(db.Text)
-    logo = db.Column(db.String(255))
-    star = db.Column(db.SmallInteger)
-    playnum = db.Column(db.BigInteger)
-    commentnum = db.Column(db.BigInteger)
+    title = db.Column(db.String(255), unique=True)  # 电影名称
+    url = db.Column(db.String(255), unique=True)  # 电影地址
+    info = db.Column(db.Text)  # 电影介绍
+    logo = db.Column(db.String(255))  # 电影封面
+    star = db.Column(db.SmallInteger)  # 星级
+    playnum = db.Column(db.BigInteger)  # 播放量
+    commentnum = db.Column(db.BigInteger)  # 评论量
 
-    tag_id = db.Column(db.Integer, db.ForeignKey('tag.id'))
-    area = db.Column(db.String(255))
-    release_time = db.Column(db.Date)
-    length = db.Column(db.String(100))
-    addtime = db.Column(db.DateTime, index=True, default=datetime.now())
+    tag_id = db.Column(db.Integer, db.ForeignKey('tag.id'))  # 所属标签
+    area = db.Column(db.String(255))  # 上映地区
+    release_time = db.Column(db.Date)  # 上映时间
+    length = db.Column(db.String(100))  # 电影长度
+    addtime = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
     comments = db.relationship('Comment', backref='movie')
     moviecols = db.relationship('Moviecol', backref='movie')
@@ -91,9 +94,9 @@ class Preview(db.Model):
     __tablename__ = 'preview'
 
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(255), unique=True)
-    logo = db.Column(db.String(255), unique=True)
-    addtime = db.Column(db.DateTime, index=True, default=datetime.now())
+    title = db.Column(db.String(255), unique=True)  # 上映预告标题
+    logo = db.Column(db.String(255), unique=True)  # 封面logo
+    addtime = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
     def __repr__(self):
         return "<Preview %r>" % self.title
@@ -104,11 +107,11 @@ class Comment(db.Model):
     __tablename__ = 'comment'
 
     id = db.Column(db.Integer, primary_key=True)
-    content = db.Column(db.Text)
-    addtime = db.Column(db.DateTime, index=True, default=datetime.now())
+    content = db.Column(db.Text)  # 评论内容
+    addtime = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
-    movie_id = db.Column(db.Integer, db.ForeignKey('movie.id'))
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    movie_id = db.Column(db.Integer, db.ForeignKey('movie.id'))  # 所属电影
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))  # 所属用户
 
 
 # 电影收藏
@@ -116,12 +119,19 @@ class Moviecol(db.Model):
     __tablename__ = 'moviecol'
 
     id = db.Column(db.Integer, primary_key=True)
-    movie_id = db.Column(db.Integer, db.ForeignKey('movie.id'))
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    addtime = db.Column(db.DateTime, index=True, default=datetime.now())
+    movie_id = db.Column(db.Integer, db.ForeignKey('movie.id'))  # 所属电影
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))  # 所属用户
+    addtime = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
     def __repr__(self):
         return "<Moviecol %r>" % self.id
+
+
+"""
+#####################
+权限及角色数据模型设计 #
+#####################
+"""
 
 
 # 权限
@@ -129,9 +139,9 @@ class Auth(db.Model):
     __tablename__ = 'auth'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), unique=True)
-    url = db.Column(db.String(255), unique=True)
-    addtime = db.Column(db.DateTime, index=True, default=datetime.now())
+    name = db.Column(db.String(100), unique=True)  # 权限
+    url = db.Column(db.String(255), unique=True) # 地址
+    addtime = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
     def __repr__(self):
         return "<Auth %r>" % self.name
@@ -142,9 +152,9 @@ class Role(db.Model):
     __tablename__ = 'role'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), unique=True)
+    name = db.Column(db.String(100), unique=True)  # 名称
     auths = db.Column(db.String(600))  # 角色权限列表
-    addtime = db.Column(db.DateTime, index=True, default=datetime.now())
+    addtime = db.Column(db.DateTime, index=True, default=datetime.utcnow())
 
     admins = db.relationship('Admin', backref='role')
 
