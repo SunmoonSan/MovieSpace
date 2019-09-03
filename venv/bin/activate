@@ -37,7 +37,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="/home/san/PycharmProjects/MovieSpace/venv"
+VIRTUAL_ENV="/Users/san/PycharmProjects/MovieSpace/venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
