@@ -1,0 +1,85 @@
+<template>
+  <el-container>
+    <el-header>
+      <m-header />
+    </el-header>
+    <br />
+    <br />
+    <br />
+    <br />
+    <hr />
+    <el-main>
+      <!-- 登录表单 -->
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4 col-md-offset-4">
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h3 class="panel-title">
+                  <span class="glyphicon glyphicon-log-in"></span>&nbsp;会员登录
+                </h3>
+              </div>
+              <div class="panel-body">
+                <form role="form">
+                  <fieldset>
+                    <div class="form-group">
+                      <label for="input_contact">
+                        <span class="glyphicon glyphicon-user"></span>&nbsp;账号
+                      </label>
+                      <input
+                        id="input_contact"
+                        class="form-control input-lg"
+                        placeholder="用户名/邮箱/手机号码"
+                        name="contact"
+                        type="text"
+                        autofocus
+                      />
+                    </div>
+                    <div class="col-md-12" id="error_contact"></div>
+                    <div class="form-group">
+                      <label for="input_password">
+                        <span class="glyphicon glyphicon-lock"></span>&nbsp;密码
+                      </label>
+                      <input
+                        id="input_password"
+                        class="form-control input-lg"
+                        placeholder="密码"
+                        name="password"
+                        type="password"
+                        value
+                      />
+                    </div>
+                    <div class="col-md-12" id="error_password"></div>
+                    <a href="user.html" class="btn btn-lg btn-success btn-block">登录</a>
+                  </fieldset>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </el-main>
+    <br />
+    <br />
+    <br />
+    <br />
+    <hr />
+    <el-footer>
+      <m-footer />
+    </el-footer>
+  </el-container>
+</template>
+
+<script>
+import MHeader from "@/components/Header.vue";
+import MFooter from "@/components/Footer.vue";
+
+export default {
+  name: "login",
+  components: {
+    MHeader,
+    MFooter
+  }
+};
+</script>
+</script>
