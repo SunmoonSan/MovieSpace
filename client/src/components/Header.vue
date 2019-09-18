@@ -10,7 +10,7 @@
             <span class="icon-bar"></span>
           </button>
           <a href="index.html" class="navbar-brand" style="height:40px;width:250px;">
-            <img src="@/assets/base/images/logo.png" style="height:40px;weight:40px;" />微电影
+            <!-- <img src="@/assets/base/images/logo.png" style="height:40px;weight:40px;" />微电影 -->
           </a>
         </div>
         <!--小屏幕导航按钮和logo-->
@@ -28,7 +28,7 @@
           </form>
           <ul class="nav navbar-nav navbar-right">
             <li>
-              <a class="curlink" href="index.html">
+              <a class="curlink" href="/">
                 <span class="glyphicon glyphicon-film"></span>&nbsp;电影
               </a>
             </li>
@@ -43,12 +43,12 @@
               </a>
             </li>
             <li>
-              <a class="curlink" href="logout.html">
+              <a class="curlink" href="/logout">
                 <span class="glyphicon glyphicon-log-out"></span>&nbsp;退出
               </a>
             </li>
             <li>
-              <a class="curlink" href="user.html">
+              <a class="curlink" href="/user">
                 <span class="glyphicon glyphicon-user"></span>&nbsp;会员
               </a>
             </li>
