@@ -17,6 +17,8 @@ parser.add_argument('name', type=str)
 
 class TagList(Resource):
 
+
+    # 获取标签列表
     def get(self):
         tag_list = Tag.query.all()
         resp_data = []

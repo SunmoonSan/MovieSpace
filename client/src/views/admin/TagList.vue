@@ -6,7 +6,14 @@
         <tree-menu />
       </el-aside>
       <el-container>
+        <el-button :plain="true" v-show="false">成功</el-button>
+        <tag-dialog :dialog="dialog" @update="getTagList" />
         <el-main>
+          <el-form :inline="true" ref="add_data" class>
+            <el-form-item class="btnRight">
+              <el-button type="primary" size="small" icon="view" @click="handleAdd()">添加</el-button>
+            </el-form-item>
+          </el-form>
           <el-table :data="tableData" style="width: 100%">
             <el-table-column label="标签名称" width="180" align="center">
               <template slot-scope="scope">
@@ -51,16 +58,19 @@
 <script>
 import AdminHeader from "@/components/AdminHeader.vue";
 import TreeMenu from "@/components/TreeMenu.vue";
-import AdminChat from "@/components/AdminChat.vue";
+import TagDialog from "@/components/TagDialog";
 export default {
   components: {
     AdminHeader,
     TreeMenu,
-    AdminChat
+    TagDialog
   },
   data() {
     return {
-      tableData: []
+      tableData: [],
+      dialog: {
+        show: false
+      }
     };
   },
   methods: {
@@ -68,7 +78,27 @@ export default {
       console.log(index, row.id);
     },
     handleDelete(index, row) {
-      console.log(index, row);
+      this.axios
+        .delete("http://127.0.0.1:5000/admin/tag/" + row.id)
+        .then(res => {
+          if (res.status == 200 && res.data.code == 0) {
+            this.getTagList();
+            this.$message({
+              message: "标签删除成功",
+              type: "success"
+            });
+          } else {
+            console.error(res.data.msg);
+            this.$message({
+              message: "标签删除失败",
+              type: "error"
+            });
+          }
+        })
+        .catch(res => {});
+    },
+    handleAdd() {
+      this.dialog.show = true;
     },
     getTagList() {
       // 获取表格数据
@@ -92,3 +122,9 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.btnRight {
+  float: right;
+}
+</style>
