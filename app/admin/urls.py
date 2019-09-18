@@ -4,7 +4,7 @@
 from flask_restful import Api
 from app.admin import admin_api
 from app.admin.index import Index
-from app.admin.tag_views import TagList
+from app.admin.tag_views import TagList, TagOp
 
 api = Api(app=admin_api, prefix='/')
 
@@ -12,3 +12,4 @@ api.add_resource(Index, '')
 
 # Tag类
 api.add_resource(TagList, 'tag/list')
+api.add_resource(TagOp, 'tag/<tag_id>')
