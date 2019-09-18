@@ -3,29 +3,42 @@
 # @desc  : Created by San on 2018-06-21 15:31
 # @site  : https://github.com/SunmoonSan
 from flask import Flask
+from flask_cors import CORS
+from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
-
-# from app.home import home
-# from app.admin import admin
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 db = SQLAlchemy()
 migrate = Migrate()
+login_manager = LoginManager()
 
 
 def create_app(config=None):
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder='app/static/')
+    CORS(app=app)
     if config is not None:
         app.config.from_object(config)
 
     db.init_app(app=app)
     migrate.init_app(app=app, db=db)
+    login_manager.init_app(app)
 
-    from app.home import home
-    app.register_blueprint(home)
+    # 配置原生SQL执行
+    engine = create_engine("mysql+pymysql://root:root@127.0.0.1:3306/movie", max_overflow=0, pool_size=5)
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    app.config['session'] = session
 
-    from app.admin import admin as admin_blueprint
-    app.register_blueprint(admin_blueprint, url_prefix='/admin')
-    # from .auth import auth as auth_blueprint
-    # app.register_blueprint(auth_blueprint, url_prefix='/auth')
+    # @login_manager.user_loader
+    # def load_user(user_id):
+    #     return User.get(user_id)
+
+    from app.home import home_api
+    app.register_blueprint(home_api)
+
+    from app.admin import admin_api
+    app.register_blueprint(admin_api, url_prefix='/admin')
+
     return app

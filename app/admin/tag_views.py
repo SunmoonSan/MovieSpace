@@ -21,7 +21,6 @@ class TagList(Resource):
         tag_list = Tag.query.all()
         resp_data = []
         for tag in tag_list:
-            print(tag.addtime)
             resp_data.append({
                 'id': tag.id,
                 'name': tag.name,
@@ -45,7 +44,6 @@ class TagList(Resource):
 class TagOp(Resource):
 
     def get(self, tag_id):
-        print(tag_id)
         return tag_id
 
     def put(self, tag_id):
@@ -67,3 +65,21 @@ class TagOp(Resource):
         finally:
             db.session.close()
         return make_response(code=resp_data['code'], msg=resp_data['msg'])
+
+    def delete(self, tag_id):
+        tag = self._is_existed(tag_id)
+        if tag is not None:
+            db.session.delete(tag)
+            db.session.commit()
+            return make_response(code=0, msg='Success')
+        else:
+            return make_response(code=1, msg="该标签不存在!")
+
+    @staticmethod
+    def _is_existed(tag_id):
+        try:
+            tag = Tag.query.get(tag_id)
+            if tag:
+                return tag
+        except Exception as err:
+            print('[error]:', err)
