@@ -45,8 +45,8 @@ export default {
       console.log(this.$refs["form"]);
       this.$refs[formname].validate(valid => {
         if (valid) {
-          this.axios
-            .post("http://127.0.0.1:5000/admin/tag/list", {
+          this.$axios
+            .post("admin/tag/list", {
               name: this.tagForm.name
             })
             .then(res => {
@@ -56,6 +56,7 @@ export default {
                   message: "标签添加成功",
                   type: "success"
                 });
+                this.$emit("update");
               } else {
                 console.log("添加失败");
                 this.$message({

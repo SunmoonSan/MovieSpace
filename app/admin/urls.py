@@ -4,12 +4,16 @@
 from flask_restful import Api
 from app.admin import admin_api
 from app.admin.index import Index
-from app.admin.tag_views import TagList, TagOp
+from app.admin.preview_views import PreviewListView, PreviewView
+from app.admin.tag_views import TagListView, TagView
 
 api = Api(app=admin_api, prefix='/')
 
 api.add_resource(Index, '')
 
 # Tag类
-api.add_resource(TagList, 'tag/list')
-api.add_resource(TagOp, 'tag/<tag_id>')
+api.add_resource(TagListView, 'tag/list')
+api.add_resource(TagView, 'tag/<tag_id>')
+
+api.add_resource(PreviewListView, 'preview/list')
+api.add_resource(PreviewView, 'preview/<preview_id>')

@@ -15,7 +15,7 @@ parser = reqparse.RequestParser()
 parser.add_argument('name', type=str)
 
 
-class TagList(Resource):
+class TagListView(Resource):
 
 
     # 获取标签列表
@@ -43,7 +43,7 @@ class TagList(Resource):
             return make_response(code=1, msg='该标签已经存在!')
 
 
-class TagOp(Resource):
+class TagView(Resource):
 
     def get(self, tag_id):
         return tag_id
