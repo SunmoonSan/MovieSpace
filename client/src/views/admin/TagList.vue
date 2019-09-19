@@ -7,7 +7,7 @@
       </el-aside>
       <el-container>
         <el-button :plain="true" v-show="false">成功</el-button>
-        <tag-dialog :dialog="dialog" @update="getTagList" />
+        <tag-dialog :dialog="dialog" :tagForm="tagForm" @update="getTagList" />
         <el-main>
           <el-form :inline="true" ref="add_data" class>
             <el-form-item class="btnRight">
@@ -69,13 +69,22 @@ export default {
     return {
       tableData: [],
       dialog: {
-        show: false
-      }
+        show: false,
+        title: "",
+        option: "edit"
+      },
+      tagForm: {}
     };
   },
   methods: {
     handleEdit(index, row) {
-      console.log(index, row.id);
+      this.dialog.show = true;
+      this.dialog.title = "编辑";
+      this.dialog.option = "edit";
+      this.tagForm = {
+        id: row.id,
+        name: row.name
+      };
     },
     handleDelete(index, row) {
       this.$axios
@@ -99,6 +108,7 @@ export default {
     },
     handleAdd() {
       this.dialog.show = true;
+      this.dialog.title = "添加";
     },
     getTagList() {
       // 获取表格数据

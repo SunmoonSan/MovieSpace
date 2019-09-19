@@ -1,7 +1,7 @@
 <template>
   <div class="tag-form">
     <el-button :plain="true" v-show="false">成功</el-button>
-    <el-dialog title="添加标签" :visible.sync="dialog.show">
+    <el-dialog :title="dialog.title" :visible.sync="dialog.show">
       <el-form
         :model="tagForm"
         :rules="rules"
@@ -24,13 +24,11 @@
 <script>
 export default {
   props: {
-    dialog: Object
+    dialog: Object,
+    tagForm: Object
   },
   data() {
     return {
-      tagForm: {
-        name: ""
-      },
       rules: {
         name: [
           { required: true, message: "请输入标签名称", trigger: "blur" },
@@ -45,29 +43,60 @@ export default {
       console.log(this.$refs["form"]);
       this.$refs[formname].validate(valid => {
         if (valid) {
-          this.$axios
-            .post("admin/tag/list", {
-              name: this.tagForm.name
-            })
-            .then(res => {
-              if (res.status == 200 && res.data.code == 0) {
-                this.dialog.show = false;
-                this.$message({
-                  message: "标签添加成功",
-                  type: "success"
-                });
-                this.$emit("update");
-              } else {
-                console.log("添加失败");
-                this.$message({
-                  message: res.data.msg,
-                  type: "error"
-                });
-              }
-            })
-            .catch(err => {
-              console.error(err);
-            });
+          console.log(this.tagForm);
+          if (this.dialog.option == "edit") {
+            this.$axios
+              .put("admin/tag/" + this.tagForm.id, {
+                name: this.tagForm.name
+              })
+              .then(res => {
+                if (res.status == 200 && res.data.code == 0) {
+                  this.dialog.show = false;
+                  this.$message({
+                    message: "标签编辑成功",
+                    type: "success"
+                  });
+                  this.$emit("update");
+                } else {
+                  console.log("编辑失败");
+                  this.$message({
+                    message: res.data.msg,
+                    type: "error"
+                  });
+                }
+              })
+              .catch(err => {
+                console.error(err);
+              });
+          } else {
+            this.$axios
+              .post("admin/tag/list", {
+                name: this.tagForm.name
+              })
+              .then(res => {
+                if (res.status == 200 && res.data.code == 0) {
+                  this.dialog.show = false;
+                  this.$message({
+                    message: "标签添加成功",
+                    type: "success"
+                  });
+                  this.$emit("update");
+                } else {
+                  console.log("添加失败");
+                  this.$message({
+                    message: res.data.msg,
+                    type: "error"
+                  });
+                }
+              })
+              .catch(err => {
+                console.error(err);
+              });
+          }
+          let url =
+            "admin/tag/" +
+            (this.dialog.option == "edit" ? this.tagForm.id : "list");
+          console.log(url);
         }
       });
     }
