@@ -6,7 +6,7 @@ import Register from './views/home/Register.vue';
 import AdminHome from './views/admin/AdminHome.vue';
 import TagList from './views/admin/TagList.vue';
 import AdminTagAdd from './views/admin/AdminTagAdd.vue';
-import TagEdit from './views/admin/TagEdit.vue';
+import PreviewList from './views/admin/PreviewList.vue';
 
 Vue.use(Router);
 
@@ -48,14 +48,9 @@ export default new Router({
       component: TagList,
     },
     {
-      path: '/admin/tag/add',
-      name: 'tag-add',
-      component: AdminTagAdd,
-    },
-    {
-      path: '/admin/tag/edit',
-      name: 'tag-edit',
-      component: TagEdit,
+      path: '/admin/preview/list',
+      name: 'preview-list',
+      component: PreviewList,
     },
   ],
 });

@@ -78,8 +78,8 @@ export default {
       console.log(index, row.id);
     },
     handleDelete(index, row) {
-      this.axios
-        .delete("http://127.0.0.1:5000/admin/tag/" + row.id)
+      this.$axios
+        .delete("admin/tag/" + row.id)
         .then(res => {
           if (res.status == 200 && res.data.code == 0) {
             this.getTagList();
@@ -102,8 +102,8 @@ export default {
     },
     getTagList() {
       // 获取表格数据
-      this.axios
-        .get("http://127.0.0.1:5000/admin/tag/list")
+      this.$axios
+        .get("admin/tag/list")
         .then(res => {
           console.log(res);
           if (res.status == 200 && res.data.code == 0) {

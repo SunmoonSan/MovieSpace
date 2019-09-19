@@ -5,18 +5,22 @@
 from datetime import datetime
 
 from flask import Flask
+from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import check_password_hash
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:root@localhost:3306/movie'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-
-db = SQLAlchemy(app=app)
+# app = Flask(__name__)
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:root@localhost:3306/movie'
+# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
+#
+# db = SQLAlchemy(app=app)
 
 
 # 用户
-class User(db.Model):
+from app import db
+
+
+class User(UserMixin, db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
