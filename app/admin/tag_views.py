@@ -17,7 +17,6 @@ parser.add_argument('name', type=str)
 
 class TagListView(Resource):
 
-
     # 获取标签列表
     def get(self):
         tag_list = Tag.query.all()
@@ -51,6 +50,12 @@ class TagView(Resource):
     def put(self, tag_id):
         params = request.json
         resp_data = {}
+        if self._is_id_existed(tag_id) is None:
+            return make_response(code=1, msg="该标签不存在!")
+
+        if self._is_name_existed(params['name']) is not None:
+            return make_response(code=1, msg='不能添加已存在的标签')
+
         try:
             db.session.query(Tag).filter_by(id=tag_id).update({'name': params['name']})
             db.session.commit()
@@ -69,7 +74,7 @@ class TagView(Resource):
         return make_response(code=resp_data['code'], msg=resp_data['msg'])
 
     def delete(self, tag_id):
-        tag = self._is_existed(tag_id)
+        tag = self._is_id_existed(tag_id)
         if tag is not None:
             db.session.delete(tag)
             db.session.commit()
@@ -78,9 +83,18 @@ class TagView(Resource):
             return make_response(code=1, msg="该标签不存在!")
 
     @staticmethod
-    def _is_existed(tag_id):
+    def _is_id_existed(tag_id):
         try:
             tag = Tag.query.get(tag_id)
+            if tag:
+                return tag
+        except Exception as err:
+            print('[error]:', err)
+
+    @staticmethod
+    def _is_name_existed(tag_name):
+        try:
+            tag = Tag.query.filter_by(name=tag_name).first()
             if tag:
                 return tag
         except Exception as err:
