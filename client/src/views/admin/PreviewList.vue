@@ -7,7 +7,13 @@
       </el-aside>
       <el-container>
         <el-button :plain="true" v-show="false">成功</el-button>
+        <preview-dialog :dialog="dialog" :previewForm="previewForm" />
         <el-main>
+          <el-form :inline="true" ref="add_data" class>
+            <el-form-item class="btnRight">
+              <el-button type="primary" size="small" icon="view" @click="handleAdd()">添加</el-button>
+            </el-form-item>
+          </el-form>
           <el-table :data="tableData" style="width: 100%">
             <el-table-column label="预告名称" width="180" align="center">
               <template slot-scope="scope">
@@ -55,39 +61,46 @@
 <script>
 import AdminHeader from "@/components/AdminHeader.vue";
 import TreeMenu from "@/components/TreeMenu.vue";
+import PreviewDialog from "@/components/PreviewDialog.vue";
 export default {
   components: {
     AdminHeader,
-    TreeMenu
+    TreeMenu,
+    PreviewDialog
   },
   data() {
     return {
-      tableData: []
+      tableData: [],
+      dialog: {
+        show: false,
+        title: ""
+      },
+      previewForm: {}
     };
   },
   methods: {
+    handleAdd() {
+      this.dialog.show = true;
+      this.dialog.title = "添加预告";
+    },
     handleEdit(index, row) {
-      console.log(index, row.id);
+      this.dialog = {
+        show: true,
+        title: "编辑预告"
+      };
+      this.previewForm = {
+        title: row.title
+      };
     },
     handleDelete(index, row) {
       this.$axios
         .delete("admin/preview/" + row.id)
         .then(res => {
           if (res.status == 200 && res.data.code == 0) {
-            this.$message({
-              message: "预告删除成功",
-              type: "success"
-            });
-          } else {
-            this.$message({
-              message: res.data.msg,
-              type: "error"
-            });
+            console.log("删除成功");
           }
         })
-        .catch(err => {
-          console.error(err);
-        });
+        .catch(err => {});
     },
     getPreviewList() {
       // 获取表格数据
@@ -111,3 +124,9 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.btnRight {
+  float: right;
+}
+</style>
