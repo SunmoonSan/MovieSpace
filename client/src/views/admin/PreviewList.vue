@@ -7,7 +7,7 @@
       </el-aside>
       <el-container>
         <el-button :plain="true" v-show="false">成功</el-button>
-        <preview-dialog :dialog="dialog" :previewForm="previewForm" />
+        <preview-dialog :dialog="dialog" :previewForm="previewForm" @update="getPreviewList" />
         <el-main>
           <el-form :inline="true" ref="add_data" class>
             <el-form-item class="btnRight">
@@ -15,7 +15,7 @@
             </el-form-item>
           </el-form>
           <el-table :data="tableData" style="width: 100%">
-            <el-table-column label="预告名称" width="180" align="center">
+            <el-table-column label="预告名称" width="160" align="center">
               <template slot-scope="scope">
                 <div slot="reference" class="name-wrapper">
                   <el-tag size="medium">{{ scope.row.title }}</el-tag>
@@ -23,16 +23,27 @@
               </template>
             </el-table-column>
 
-            <el-table-column label="创建日期" width="240">
+            <el-table-column label="创建日期" width="180">
               <template slot-scope="scope">
                 <i class="el-icon-time"></i>
                 <span style="margin-left: 10px">{{ scope.row.addtime }}</span>
               </template>
             </el-table-column>
 
-            <el-table-column label="图片链接" width="240" align="center">
+            <!-- <el-table-column label="海报链接" width="500" align="center">
               <template slot-scope="scope">
-                <span style="margin-left: 10px">{{ scope.row.url }}</span>
+                <span style="margin-left: 10px">
+                  <a v-bind:href="scope.row.url">{{ scope.row.title }}</a>
+                </span>
+              </template>
+            </el-table-column>-->
+
+            <el-table-column label="海报" width="160" height="120" align="center">
+              <template slot-scope="scope">
+                <el-image
+                  style="width: 120px; height: 120px"
+                  :src="scope.row.url"
+                >{{ scope.row.url }}</el-image>
               </template>
             </el-table-column>
 
@@ -82,6 +93,7 @@ export default {
     handleAdd() {
       this.dialog.show = true;
       this.dialog.title = "添加预告";
+      this.previewForm.imageUrl = "";
     },
     handleEdit(index, row) {
       this.dialog = {
@@ -89,7 +101,9 @@ export default {
         title: "编辑预告"
       };
       this.previewForm = {
-        title: row.title
+        id: row.id,
+        title: row.title,
+        imageUrl: row.url
       };
     },
     handleDelete(index, row) {
@@ -97,7 +111,10 @@ export default {
         .delete("admin/preview/" + row.id)
         .then(res => {
           if (res.status == 200 && res.data.code == 0) {
-            console.log("删除成功");
+            this.$message({
+              message: "预告删除成功",
+              type: "success"
+            });
           }
         })
         .catch(err => {});
@@ -109,6 +126,7 @@ export default {
         .then(res => {
           console.log(res);
           if (res.status == 200 && res.data.code == 0) {
+            console.log(this.data);
             this.tableData = res.data.data;
           } else {
             this.tableData = [];

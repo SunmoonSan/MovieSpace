@@ -30,37 +30,34 @@ class PreviewListView(Resource):
 
     # 新建预告
     def post(self):
-        title = request.form['title']
-        preview_img = request.files['previewImg']
-        preview = Preview.query.filter_by(title=title).first()
-        if preview is None:
-            if preview_img and self.allowed_file(preview_img.filename):
-                filename = secure_filename(preview_img.filename)
-                preview_img.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
-
-                if os.path.exists(os.path.join(current_app.config['UPLOAD_FOLDER'], filename)):
-                    db.session.add(
-                        Preview(title=title, logo=os.path.join(current_app.config['UPLOAD_FOLDER'], filename),
-                                addtime=datetime.datetime.now()))
-                    db.session.commit()
-                    return make_response(code=0, msg='Success')
-            else:
-                return make_response(code=1, msg='文件格式不正确!')
+        params = request.json
+        title = params.get('title')
+        logo_link = params.get('logoLink')
+        if self._is_title_existed(title=title) is None:
+            db.session.add(Preview(title=title, logo=logo_link))
+            db.session.commit()
+            return make_response(code=0)
         else:
-            return make_response(code=1, msg='该标签已经存在!')
+            return make_response(code=1, msg='不能添加重复预告')
 
     @staticmethod
-    def allowed_file(filename):
-        return '.' in filename and \
-               filename.rsplit('.', 1)[1] in current_app.config['ALLOWED_EXTENSIONS']
+    def _is_title_existed(title):
+        try:
+            preview = Preview.query.filter_by(title=title).first()
+            if preview:
+                return preview
+        except Exception as err:
+            print('[error]:', err)
 
 
 class PreviewView(Resource):
 
     def put(self, preview_id):
+        print('put, preview')
+        params = request.json
         preview = self._is_id_existed(preview_id=preview_id)
         if preview is not None:
-            db.session.delete(preview)
+            db.session.query(Preview).filter_by(id=preview_id).update({'title': params['title'], 'logo': params['logoLink']})
             db.session.commit()
             return make_response(code=0, msg='Success')
         else:
