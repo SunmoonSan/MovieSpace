@@ -48,6 +48,17 @@
               </template>
             </el-table-column>
           </el-table>
+          <div class="pagination">
+            <el-pagination
+              @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+              :current-page.sync="pagination.page_index"
+              :page-sizes="pagination.page_sizes"
+              :page-size="pagination.page_size"
+              :layout="pagination.layout"
+              :total="pagination.total"
+            ></el-pagination>
+          </div>
         </el-main>
         <el-footer>Footer</el-footer>
       </el-container>
@@ -67,6 +78,13 @@ export default {
   },
   data() {
     return {
+      pagination: {
+        page_index: 2,
+        total: 100,
+        page_size: 5,
+        page_sizes: [5, 10, 15, 20],
+        layout: "total, sizes, prev, pager, next, jumper"
+      },
       tableData: [],
       dialog: {
         show: false,
@@ -110,6 +128,12 @@ export default {
       this.dialog.show = true;
       this.dialog.title = "添加";
     },
+    handleSizeChange(page_size) {
+      console.log(page_size);
+    },
+    handleCurrentChange(page) {
+      console.log("size" + page);
+    },
     getTagList() {
       // 获取表格数据
       this.$axios
@@ -136,5 +160,9 @@ export default {
 <style scoped>
 .btnRight {
   float: right;
+}
+.pagination {
+  text-align: right;
+  margin-top: 10px;
 }
 </style>
