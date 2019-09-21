@@ -53,7 +53,6 @@ class PreviewListView(Resource):
 class PreviewView(Resource):
 
     def put(self, preview_id):
-        print('put, preview')
         params = request.json
         preview = self._is_id_existed(preview_id=preview_id)
         if preview is not None:

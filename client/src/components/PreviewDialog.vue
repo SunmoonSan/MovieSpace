@@ -82,10 +82,11 @@ export default {
                 console.error(err);
               });
           } else {
+            // 添加预告
             this.$axios
               .post("admin/preview/list", {
                 title: this.previewForm.title,
-                logoLink: this.imageUrl
+                logoLink: this.previewForm.imageUrl
               })
               .then(res => {
                 if (res.status == 200 && res.data.code == 0) {
@@ -113,8 +114,9 @@ export default {
     handleAvatarSuccess(res, file) {
       console.log(res);
       // this.imageUrl = URL.createObjectURL(file.raw);
-      this.imageUrl = "http://py32746gy.bkt.clouddn.com/" + res.key;
+      // this.imageUrl = "http://py32746gy.bkt.clouddn.com/" + res.key;
       this.previewForm.imageUrl = "http://py32746gy.bkt.clouddn.com/" + res.key;
+      console.log("渲染图片");
     },
     beforeAvatarUpload(file) {
       // const isJPG = file.type === "image/jpeg";

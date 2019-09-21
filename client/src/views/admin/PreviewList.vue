@@ -84,7 +84,8 @@ export default {
       tableData: [],
       dialog: {
         show: false,
-        title: ""
+        title: "",
+        option: "edit"
       },
       previewForm: {}
     };
@@ -93,12 +94,14 @@ export default {
     handleAdd() {
       this.dialog.show = true;
       this.dialog.title = "添加预告";
-      this.previewForm.imageUrl = "";
+      this.dialog.option = "add";
+      this.previewForm = {};
     },
     handleEdit(index, row) {
       this.dialog = {
         show: true,
-        title: "编辑预告"
+        title: "编辑预告",
+        option: "edit"
       };
       this.previewForm = {
         id: row.id,
@@ -115,6 +118,7 @@ export default {
               message: "预告删除成功",
               type: "success"
             });
+            this.$$emit("update");
           }
         })
         .catch(err => {});
