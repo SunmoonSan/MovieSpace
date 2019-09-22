@@ -5,8 +5,8 @@ import Login from './views/home/Login.vue';
 import Register from './views/home/Register.vue';
 import AdminHome from './views/admin/AdminHome.vue';
 import TagList from './views/admin/TagList.vue';
-import AdminTagAdd from './views/admin/AdminTagAdd.vue';
 import PreviewList from './views/admin/PreviewList.vue';
+import MovieList from './views/admin/MovieList.vue';
 
 Vue.use(Router);
 
@@ -51,6 +51,11 @@ export default new Router({
       path: '/admin/preview/list',
       name: 'preview-list',
       component: PreviewList,
+    },
+    {
+      path: '/admin/movie/list',
+      name: 'movie-list',
+      component: MovieList,
     },
   ],
 });
