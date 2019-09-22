@@ -18,13 +18,13 @@
             :before-upload="beforeAvatarUpload"
             :data="postData"
           >
-            <img v-if="previewForm.imageUrl" :src="previewForm.imageUrl" class="avatar" />
-            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            <img v-if="dialog.hidden===false" :src="imageUrl" class="avatar" />
+            <img v-else :src="previewForm.imageUrl" class="avatar" />
           </el-upload>
         </div>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialog.show = false">取 消</el-button>
+        <el-button @click="onCancel">取 消</el-button>
         <el-button type="primary" @click="onSubmit('previewForm')">提 交</el-button>
       </div>
     </el-dialog>
@@ -40,6 +40,7 @@ export default {
   },
   data() {
     return {
+      imageUrl: "",
       rules: {
         tiele: [
           { required: true, message: "请输入标签名称", trigger: "blur" },
@@ -48,7 +49,7 @@ export default {
       },
       postData: {
         token:
-          "ux4DxWb-TJNjReQH6Nms_fPADLkBh4P4dIfg3dgY:IxJ_wlxqMwFszApNNpTnqBtBWbE=:eyJzY29wZSI6Im1vdmllc3BhY2UwMDEiLCJkZWFkbGluZSI6MTU2OTAzMTM0M30="
+          "ux4DxWb-TJNjReQH6Nms_fPADLkBh4P4dIfg3dgY:E2mEtGaVxvgU5UfEcMSlG2Ux6HM=:eyJzY29wZSI6Im1vdmllc3BhY2UwMDEiLCJkZWFkbGluZSI6MTU2OTE2NzA1NX0="
       }
     };
   },
@@ -111,12 +112,14 @@ export default {
         }
       });
     },
+    onCancel() {
+      this.imageUrl = "";
+      this.dialog.show = false;
+    },
     handleAvatarSuccess(res, file) {
-      console.log(res);
-      // this.imageUrl = URL.createObjectURL(file.raw);
-      // this.imageUrl = "http://py32746gy.bkt.clouddn.com/" + res.key;
+      this.dialog.hidden = false;
+      this.imageUrl = "http://py32746gy.bkt.clouddn.com/" + res.key;
       this.previewForm.imageUrl = "http://py32746gy.bkt.clouddn.com/" + res.key;
-      console.log("渲染图片");
     },
     beforeAvatarUpload(file) {
       // const isJPG = file.type === "image/jpeg";
