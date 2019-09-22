@@ -4,9 +4,7 @@
 import datetime
 
 from flask import request
-from flask_restful import Resource, reqparse, abort
-from pymysql import IntegrityError
-
+from flask_restful import Resource, reqparse
 from app import db
 from app.models import Tag
 from app.utils.response import make_response

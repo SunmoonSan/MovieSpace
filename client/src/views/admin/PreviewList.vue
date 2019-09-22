@@ -85,7 +85,8 @@ export default {
       dialog: {
         show: false,
         title: "",
-        option: "edit"
+        option: "edit",
+        hidden: false
       },
       previewForm: {}
     };
@@ -95,13 +96,15 @@ export default {
       this.dialog.show = true;
       this.dialog.title = "添加预告";
       this.dialog.option = "add";
+      this.dialog.hidden = false;
       this.previewForm = {};
     },
     handleEdit(index, row) {
       this.dialog = {
         show: true,
         title: "编辑预告",
-        option: "edit"
+        option: "edit",
+        hidden: true
       };
       this.previewForm = {
         id: row.id,
