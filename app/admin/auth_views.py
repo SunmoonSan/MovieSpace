@@ -50,8 +50,33 @@ class AuthListView(Resource):
 
 class AuthView(Resource):
 
-    def put(self):
-        pass
+    def put(self, auth_id):
+        params = request.json
+        auth = self._is_id_existed(auth_id=auth_id)
+        if auth is not None:
+            db.session.query(Auth).filter_by(id=auth_id).update({
+                'name': params['name'],
+                'url': params['url']
+            })
+            db.session.commit()
+            return make_response(code=0, msg='Success')
+        else:
+            return make_response(code=1, msg='该权限不存在!')
 
-    def delete(self):
-        pass
+    def delete(self, auth_id):
+        auth = self._is_id_existed(auth_id=auth_id)
+        if auth is not None:
+            db.session.delete(auth)
+            db.session.commit()
+            return make_response(code=0, msg='Success')
+        else:
+            return make_response(code=1, msg='该权限不存在!')
+
+    @staticmethod
+    def _is_id_existed(auth_id):
+        try:
+            auth = Auth.query.get(auth_id)
+            if auth:
+                return auth
+        except Exception as err:
+            print('[error]:', err)

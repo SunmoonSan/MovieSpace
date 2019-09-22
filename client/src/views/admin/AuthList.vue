@@ -7,7 +7,7 @@
       </el-aside>
       <el-container>
         <el-button :plain="true" v-show="false">成功</el-button>
-        <preview-dialog :dialog="dialog" :previewForm="previewForm" @update="getPreviewList" />
+        <auth-dialog :dialog="dialog" :authForm="authForm" @update="getAuthList" />
         <el-main>
           <el-form :inline="true" ref="add_data" class>
             <el-form-item class="btnRight">
@@ -15,7 +15,7 @@
             </el-form-item>
           </el-form>
           <el-table :data="tableData" style="width: 100%">
-            <el-table-column label="预告名称" width="160" align="center">
+            <el-table-column label="预告名称" width="240" align="center">
               <template slot-scope="scope">
                 <div slot="reference" class="name-wrapper">
                   <el-tag size="medium">{{ scope.row.name }}</el-tag>
@@ -23,7 +23,7 @@
               </template>
             </el-table-column>
 
-            <el-table-column label="权限路由" width="180">
+            <el-table-column label="权限路由" width="320">
               <template slot-scope="scope">
                 <span>{{ scope.row.url }}</span>
               </template>
@@ -61,12 +61,12 @@
 <script>
 import AdminHeader from "@/components/AdminHeader.vue";
 import TreeMenu from "@/components/TreeMenu.vue";
-import PreviewDialog from "@/components/PreviewDialog.vue";
+import AuthDialog from "@/components/AuthDialog.vue";
 export default {
   components: {
     AdminHeader,
     TreeMenu,
-    PreviewDialog
+    AuthDialog
   },
   data() {
     return {
@@ -74,46 +74,46 @@ export default {
       dialog: {
         show: false,
         title: "",
-        option: "edit",
-        hidden: false
+        option: "edit"
       },
-      previewForm: {}
+      authForm: {}
     };
   },
   methods: {
     handleAdd() {
       this.dialog.show = true;
-      this.dialog.title = "添加预告";
+      this.dialog.title = "添加权限";
       this.dialog.option = "add";
-      this.dialog.hidden = false;
-      this.previewForm = {};
+      this.authForm = {};
     },
     handleEdit(index, row) {
       this.dialog = {
         show: true,
-        title: "编辑预告",
-        option: "edit",
-        hidden: true
+        title: "编辑权限",
+        option: "edit"
       };
-      this.previewForm = {
+      this.authForm = {
         id: row.id,
-        title: row.title,
-        imageUrl: row.url
+        name: row.name,
+        url: row.url
       };
     },
     handleDelete(index, row) {
       this.$axios
-        .delete("admin/preview/" + row.id)
+        .delete("admin/auth/" + row.id)
         .then(res => {
           if (res.status == 200 && res.data.code == 0) {
             this.$message({
-              message: "预告删除成功",
+              message: "权限删除成功",
               type: "success"
             });
-            this.$emit("update");
+            this.getAuthList();
+            this.authForm = {};
           }
         })
-        .catch(err => {});
+        .catch(err => {
+          console.error(err);
+        });
     },
     getAuthList() {
       // 获取表格数据
