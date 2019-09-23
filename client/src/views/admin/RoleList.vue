@@ -137,24 +137,6 @@ export default {
         .catch(err => {
           console.error(err);
         });
-    },
-    getAuthList(authIds, authList) {
-      this.$axios
-        .post("admin/auth", {
-          authIds: authIds
-        })
-        .then(res => {
-          if (res.status == 200 && res.data.code == 0) {
-            let authList = res.data.data;
-            for (let i = 0; i < authList.length; i++) {
-              authIds.push(authList[i].id);
-            }
-            this.roleForm.authList = authIds;
-          }
-        })
-        .catch(err => {
-          console.error(err);
-        });
     }
   },
   created: function() {
