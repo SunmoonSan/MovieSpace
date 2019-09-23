@@ -9,6 +9,7 @@ import PreviewList from './views/admin/PreviewList.vue';
 import MovieList from './views/admin/MovieList.vue';
 import AuthList from './views/admin/AuthList.vue';
 import RoleList from './views/admin/RoleList.vue';
+import AdminList from './views/admin/AdminList';
 
 Vue.use(Router);
 
@@ -73,6 +74,11 @@ export default new Router({
       path: '/admin/role/list',
       name: 'role-list',
       component: RoleList,
+    },
+    {
+      path: '/admin/admin/list',
+      name: 'admin-list',
+      component: AdminList,
     },
   ],
 });
