@@ -3,7 +3,7 @@
 # @desc : Created by San on 2019/9/11 00:16
 from flask_restful import Api
 from app.admin import admin_api
-from app.admin.admin_views import AdminListView, AdminView
+from app.admin.admin_views import AdminListView, AdminView, AdminLoginView
 from app.admin.auth_views import AuthListView, AuthView, AuthOfRoleView
 from app.admin.index import Index
 from app.admin.movie_views import MovieListView, MovieView
@@ -39,3 +39,4 @@ api.add_resource(RoleView, 'role/<role_id>')
 # Admin类
 api.add_resource(AdminListView, 'admin/list')
 api.add_resource(AdminView, 'admin/<admin_id>')
+api.add_resource(AdminLoginView, 'login')

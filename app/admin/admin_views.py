@@ -58,3 +58,19 @@ class AdminView(Resource):
 
     def delete(self):
         pass
+
+
+class AdminLoginView(Resource):
+
+    def post(self):
+        params = request.json
+        name = params['name']
+        password = params['password']
+        admin = Admin.query.filter_by(name=name).first()
+        print(admin)
+        if admin is not None:
+            if admin.pwd == password:
+                return make_response(code=0, msg='Success')
+            return make_response(code=1, msg='账号或者密码错误!')
+        else:
+            return make_response(code=0, msg='该管理员不存在!')
