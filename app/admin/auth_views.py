@@ -3,6 +3,7 @@
 # @desc : Created by San on 2019/9/22 16:58
 from flask import request
 from flask_restful import Resource
+from sqlalchemy import or_
 
 from app import db
 from app.models import Auth
@@ -46,6 +47,21 @@ class AuthListView(Resource):
                 return auth
         except Exception as err:
             print('[error]:', err)
+
+
+class AuthOfRoleView(Resource):
+
+    def post(self):
+        params = request.json
+        auth_ids = params['authIds']
+        auth_list = Auth.query.filter(Auth.id.in_(auth_ids)).all()
+        resp_data = []
+        for auth in auth_list:
+            resp_data.append({
+                'id': auth.id,
+                'name': auth.name,
+            })
+        return make_response(code=0, data=resp_data, msg='Success')
 
 
 class AuthView(Resource):

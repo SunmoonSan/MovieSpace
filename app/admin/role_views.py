@@ -17,9 +17,6 @@ class RoleListView(Resource):
         role_list = Role.query.all()
         resp_data = []
         for role in role_list:
-            print(role)
-            print(role.admins)
-            print(role.auths)
             resp_data.append({
                 'id': role.id,
                 'name': role.name,
@@ -47,17 +44,38 @@ class RoleListView(Resource):
     @staticmethod
     def _is_name_existed(name):
         try:
-            role = Role.query.filter_by(name=name).first()
-            if role:
-                return role
+            return Role.query.filter_by(name=name).first()
         except Exception as err:
             print('[error]:', err)
 
 
 class RoleView(Resource):
 
-    def put(self):
-        pass
+    def put(self, role_id):
+        parmas = request.json
+        role = self._is_id_existed(role_id=role_id)
+        if role is not None:
+            db.session.query(Role).filter(id=role_id).update({
+                'name': parmas['name'],
+                'auths': ';'.join(parmas['authList'])
+            })
+            db.session.commit()
+            return make_response(code=0, msg='Success')
+        else:
+            return make_response(code=1, msg='该角色不存在!')
 
-    def delete(self):
-        pass
+    def delete(self, role_id):
+        role = self._is_id_existed(role_id=role_id)
+        if role is not None:
+            db.session.delete(role)
+            db.session.commit()
+            return make_response(code=0, msg='Success')
+        else:
+            return make_response(code=1, msg='该角色不存在!')
+
+    @staticmethod
+    def _is_id_existed(role_id):
+        try:
+            return Role.query.get(role_id).first()
+        except Exception as err:
+            print('[error]', err)
