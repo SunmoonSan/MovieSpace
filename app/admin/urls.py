@@ -6,6 +6,7 @@ from app.admin import admin_api
 from app.admin.admin_views import AdminListView, AdminView, AdminLoginView
 from app.admin.auth_views import AuthListView, AuthView, AuthOfRoleView
 from app.admin.index import Index
+from app.admin.log_views import AdminLogView, UserLogView, OpLogView
 from app.admin.movie_views import MovieListView, MovieView
 from app.admin.preview_views import PreviewListView, PreviewView
 from app.admin.role_views import RoleListView, RoleView
@@ -40,3 +41,8 @@ api.add_resource(RoleView, 'role/<role_id>')
 api.add_resource(AdminListView, 'admin/list')
 api.add_resource(AdminView, 'admin/<admin_id>')
 api.add_resource(AdminLoginView, 'login')
+
+# Log类
+api.add_resource(AdminLogView, 'log/admin')
+api.add_resource(UserLogView, 'log/user')
+api.add_resource(OpLogView, 'log/op')
