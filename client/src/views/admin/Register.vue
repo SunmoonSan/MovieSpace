@@ -1,7 +1,13 @@
 <template>
   <el-container>
-    <my-header />
+    <el-header>
+      <MHeader />
+    </el-header>
     <el-main>
+      <el-button :plain="true" v-show="false">成功</el-button>
+      <hr />
+      <h1>注册</h1>
+
       <div class="register-form">
         <el-form
           :model="ruleForm"
@@ -23,27 +29,32 @@
           </el-form-item>
 
           <el-form-item>
-            <el-button type="primary" @click="submitForm('ruleForm')">注册</el-button>
+            <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button>
             <el-button @click="resetForm('ruleForm')">重置</el-button>
           </el-form-item>
         </el-form>
       </div>
     </el-main>
-    <el-footer>Footer</el-footer>
+
+    <el-footer style="height: 100%;">
+      <m-footer />
+    </el-footer>
   </el-container>
 </template>
 
 <script>
-import MyHeader from "@/components/Header.vue";
+import MHeader from "@/components/Header.vue";
 import MFooter from "@/components/Footer.vue";
 export default {
   components: {
-    MyHeader,
+    MHeader,
     MFooter
   },
   data() {
     return {
-      ruleForm: {},
+      ruleForm: {
+        email: ""
+      },
       rules: {
         email: [
           {
@@ -85,32 +96,29 @@ export default {
     };
   },
   methods: {
-    submitForm(formname) {
+    submitForm(formName) {
+      let self = this;
+      console.log("this");
       console.log(this);
-      this.$refs[formname].validate(valid => {
+      this.$refs[formName].validate(valid => {
+        console.log(valid);
+        console.log(this.rules);
         if (valid) {
-          console.log(this);
-          this.$axios
-            .post("register", {
+          this.axios
+            .post("http://127.0.0.1:5000/register", {
               email: this.ruleForm.email,
               password: this.ruleForm.password
             })
-            .then(res => {
-              if (res.status == 200 && res.data.code == 0) {
-                this.$message({
-                  message: "注册成功",
-                  type: "success"
-                });
-                this.$router.push("/");
+            .then(function(res) {
+              if (res.data.code == 0) {
+                self.$message.success("注册成功!");
               } else {
-                this.$message({
-                  message: res.data.msg,
-                  type: "error"
-                });
+                self.$message.error("注册失败, " + res.data.msg);
+                console.error(res.data);
               }
             })
-            .catch(err => {
-              console.error(err);
+            .catch(function(error) {
+              console.error(error);
             });
         }
       });
@@ -122,25 +130,26 @@ export default {
 <style>
 .el-header,
 .el-footer {
-  /* background-color: #b3c0d1; */
-  /* color: #333; */
+  background-color: #b3c0d1;
+  color: #333;
+  padding: 0px;
   text-align: center;
-  line-height: 60px;
+  height: 80px;
+  line-height: 80px;
 }
 
 .el-main {
   background-color: #e9eef3;
   color: #333;
-  text-align: center;
-  line-height: 160px;
+  height: 600px;
 }
 
 body > .el-container {
-  margin-bottom: 40px;
+  margin-bottom: 10px;
 }
 
 .register-form {
-  width: 600px;
-  margin: 100px auto;
+  width: 400px;
+  margin: auto;
 }
 </style>

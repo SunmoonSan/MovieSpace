@@ -3,6 +3,7 @@ import Router from 'vue-router';
 import Home from './views/home/Home.vue';
 import Login from './views/home/Login.vue';
 import AdminHome from './views/admin/AdminHome.vue';
+import Register from './views/home/Register.vue';
 import AdminLogin from './views/admin/Login.vue';
 import TagList from './views/admin/TagList.vue';
 import PreviewList from './views/admin/PreviewList.vue';
@@ -10,6 +11,8 @@ import MovieList from './views/admin/MovieList.vue';
 import AuthList from './views/admin/AuthList.vue';
 import RoleList from './views/admin/RoleList.vue';
 import AdminList from './views/admin/AdminList.vue';
+import AdminLoginLog from './views/admin/LoginLog.vue';
+import AdminOpLog from './views/admin/OpLog.vue';
 
 Vue.use(Router);
 
@@ -21,6 +24,11 @@ export default new Router({
       path: '/',
       name: 'home',
       component: Home,
+    },
+    {
+      path: '/register',
+      name: 'register',
+      component: Register,
     },
     {
       path: '/login',
@@ -41,8 +49,8 @@ export default new Router({
       component: AdminHome,
     },
     {
-      path: '/register',
-      name: 'register',
+      path: '/admin/register',
+      name: 'admin-register',
       component: AdminHome,
     },
     {
@@ -79,6 +87,16 @@ export default new Router({
       path: '/admin/admin/list',
       name: 'admin-list',
       component: AdminList,
+    },
+    {
+      path: '/admin/log/admin',
+      name: 'log-admin',
+      component: AdminLoginLog,
+    },
+    {
+      path: '/admin/log/op',
+      name: 'log-op',
+      component: AdminOpLog,
     },
   ],
 });
