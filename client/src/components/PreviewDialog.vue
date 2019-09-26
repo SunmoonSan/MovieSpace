@@ -48,8 +48,7 @@ export default {
         ]
       },
       postData: {
-        token:
-          "ux4DxWb-TJNjReQH6Nms_fPADLkBh4P4dIfg3dgY:E2mEtGaVxvgU5UfEcMSlG2Ux6HM=:eyJzY29wZSI6Im1vdmllc3BhY2UwMDEiLCJkZWFkbGluZSI6MTU2OTE2NzA1NX0="
+        token: ""
       }
     };
   },
@@ -116,6 +115,20 @@ export default {
       this.imageUrl = "";
       this.dialog.show = false;
     },
+    getQiniuToken() {
+      this.$axios
+        .get("auth/qiniu")
+        .then(res => {
+          if (res.status == 200 && res.data.code == 0) {
+            this.postData = {
+              token: res.data.data["token"]
+            };
+          }
+        })
+        .catch(err => {
+          console.error(err);
+        });
+    },
     handleAvatarSuccess(res, file) {
       this.dialog.hidden = false;
       this.imageUrl = "http://py32746gy.bkt.clouddn.com/" + res.key;
@@ -133,6 +146,9 @@ export default {
       // return isJPG && isLt2M;
       return isLt2M;
     }
+  },
+  created() {
+    this.getQiniuToken();
   }
 };
 </script>

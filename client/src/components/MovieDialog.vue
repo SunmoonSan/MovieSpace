@@ -177,6 +177,20 @@ export default {
         }
       });
     },
+    getQiniuToken() {
+      this.$axios
+        .get("auth/qiniu")
+        .then(res => {
+          if (res.status == 200 && res.data.code == 0) {
+            this.postData = {
+              token: res.data.data["token"]
+            };
+          }
+        })
+        .catch(err => {
+          console.error(err);
+        });
+    },
     handleImageSuccess(res, file) {
       this.imageUrl = "http://py32746gy.bkt.clouddn.com/" + res.key;
       this.movieForm.imageUrl = "http://py32746gy.bkt.clouddn.com/" + res.key;
@@ -222,6 +236,7 @@ export default {
   },
   created: function() {
     this.getTagList();
+    this.getQiniuToken();
   }
 };
 </script>
