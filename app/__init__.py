@@ -7,6 +7,7 @@ from flask_cors import CORS
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
+from qiniu import Auth
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -31,6 +32,10 @@ def create_app(config=None):
     session = Session()
     app.config['session'] = session
 
+    # 七牛云
+    qiniu = Auth("ux4DxWb-TJNjReQH6Nms_fPADLkBh4P4dIfg3dgY", "D5FenVgla1hB7cZbAXUCa3M_V_St7-SR8DKN0AUb")
+    app.config['qiniu'] = qiniu
+
     # @login_manager.user_loader
     # def load_user(user_id):
     #     return User.get(user_id)
@@ -40,5 +45,8 @@ def create_app(config=None):
 
     from app.admin import admin_api
     app.register_blueprint(admin_api, url_prefix='/admin')
+
+    from app.auth import auth_api
+    app.register_blueprint(auth_api)
 
     return app
