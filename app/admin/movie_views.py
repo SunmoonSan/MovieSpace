@@ -20,9 +20,9 @@ class MovieListView(Resource):
             resp_data.append({
                 'id': movie.id,
                 'title': movie.title,
-                'url': movie.url,
+                'videoLink': movie.url,
                 'info': movie.info,
-                'logoLink': movie.logo,
+                'imageLink': movie.logo,
                 'star': movie.star,
                 'playNum': movie.playnum,
                 'commentNum': movie.commentnum,
@@ -37,14 +37,14 @@ class MovieListView(Resource):
     def post(self):
         params = request.json
         title = params.get('title')
-        url = params.get('videoLink')
-        logo_link = params.get('logoLink')
+        video_link = params.get('videoLink')
+        image_link = params.get('imageLink')
         if self._is_title_existed(title=title) is None:
             db.session.add(Movie(
                 title=title,
-                url=url,
+                url=video_link,
                 info=params['info'],
-                logo=params['logoLink'],
+                logo=image_link,
                 # star=params['star'],
                 # playnum=params['playNum'],
                 # commentnum=params['commentNum'],
@@ -56,7 +56,7 @@ class MovieListView(Resource):
             db.session.commit()
             return make_response(code=0)
         else:
-            return make_response(code=1, msg='不能添加重复预告')
+            return make_response(code=1, msg='不能添加重复电影')
 
     @staticmethod
     def _is_title_existed(title):
@@ -70,8 +70,38 @@ class MovieListView(Resource):
 
 class MovieView(Resource):
 
-    def put(self):
-        pass
+    def put(self, movie_id):
+        params = request.json
+        print(params)
+        title = params.get('title')
+        video_link = params.get('videoLink')
+        info = params.get('info')
+        image_link = params.get('imageLink')
+        star = params.get('star')
+        play_num = params.get('playNum')
+        comment_num = params.get('commentNum')
+        tag_id = params.get('tagId')
+        area = params.get('area')
+        release_time = params.get('releaseDate')
+        length = params.get('length')
+        addtime = datetime.datetime.now()
+
+        movie = self._is_id_existed(movie_id=movie_id)
+        if movie is not None:
+            movie.title = title
+            movie.url = video_link
+            movie.info = info
+            movie.logo = image_link
+            movie.star = star
+            movie.playnum = play_num
+            movie.commentnum = comment_num
+            movie.area = area
+            # movie.release_time = release_time
+            movie.length = length
+            db.session.commit()
+            return make_response(code=0, msg='Success')
+
+        return make_response(code=1, msg='该电影不存在')
 
     def delete(self, movie_id):
         movie = self._is_id_existed(movie_id=movie_id)
@@ -85,9 +115,6 @@ class MovieView(Resource):
     @staticmethod
     def _is_id_existed(movie_id):
         try:
-            movie = Movie.query.get_or_404(movie_id)
-            if movie:
-                return movie
+            return Movie.query.get(movie_id)
         except Exception as err:
             print('[error]:', err)
-

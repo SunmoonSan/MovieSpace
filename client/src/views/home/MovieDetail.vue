@@ -5,18 +5,23 @@
       <div class="movie-detail">
         <b-row>
           <b-col cols="8">
-            <b-embed type="iframe" aspect="16by9" :src="videoLink" allowfullscreen></b-embed>
+            <b-embed type="iframe" aspect="4by3" :src="videoLink" allowfullscreen></b-embed>
           </b-col>
           <b-col cols="4">
             <b-list-group>
+              <b-list-group-item>
+                <b-button variant="outline-info" @click="handelMovieCollect(movie.id)">
+                  <i class="el-icon-star-off">收藏</i>
+                </b-button>
+              </b-list-group-item>
               <b-list-group-item>片名:{{movie.title}}</b-list-group-item>
-              <b-list-group-item>标签</b-list-group-item>
+              <!-- <b-list-group-item>标签</b-list-group-item> -->
               <b-list-group-item>片长: {{movie.length}}分钟</b-list-group-item>
               <b-list-group-item>上映地区: {{movie.area}}</b-list-group-item>
               <b-list-group-item>上映时间: {{movie.releaseTime}}</b-list-group-item>
               <b-list-group-item>播放量:</b-list-group-item>
               <b-list-group-item>评论量:</b-list-group-item>
-              <b-list-group-item>影片简介: {{movie.info}}</b-list-group-item>
+              <b-list-group-item>影片简介: {{movie.info.substring(0, 120) + "..."}}</b-list-group-item>
             </b-list-group>
           </b-col>
         </b-row>
@@ -31,10 +36,10 @@
             rows="3"
             max-rows="6"
           ></b-form-textarea>
-          <b-button block variant="primary" @click="onSubmit">提交评论</b-button>
+          <b-button block variant="primary" @click="handelSubmitComment(movie.id)">提交评论</b-button>
         </div>
         <div class="comment-list">
-          <ul class="commentList">
+          <ul class="commentList" v-for="(comment, index) in commentList" :key="index">
             <li class="item cl">
               <!-- <a href="user.html">
                 <i class="avatar size-L radius">
@@ -46,21 +51,29 @@
                   />
                 </i>
               </a>-->
-              <div class="comment-main">
-                <header class="comment-header">
-                  <div class="comment-meta">
-                    <!-- <a class="comment-author" href="user.html">xiaoli</a> -->
-                    评论于
-                    <time
-                      title="2016-12-07 09:12:51"
-                      datetime="2016-12-07 09:12:51"
-                    >2017-03-01 09:12:51</time>
+              <el-row :gutter="24">
+                <el-col :span="2">
+                  <b-img
+                    rounded="circle"
+                    alt="Circle image"
+                    style="width: 75px;height: 75px"
+                    :src="comment.commentor.avatar"
+                  ></b-img>
+                </el-col>
+                <el-col :span="22">
+                  <div class="comment-main">
+                    <header class="comment-header">
+                      <div class="comment-meta">
+                        <a class="comment-author">{{comment.commentor.name}}</a>
+                        评论于{{comment.addtime}}
+                      </div>
+                    </header>
+                    <div class="comment-body">
+                      <p>{{comment.content}}</p>
+                    </div>
                   </div>
-                </header>
-                <div class="comment-body">
-                  <p>这电影真好看！</p>
-                </div>
-              </div>
+                </el-col>
+              </el-row>
             </li>
           </ul>
         </div>
@@ -78,33 +91,48 @@ export default {
     MyHeader,
     MFooter
   },
+  computed: {
+    isAuthenticated() {
+      return this.$store.state.isAuthenticated;
+    }
+  },
   data() {
     return {
+      movieId: "",
+
       title: "送我上青云",
       videoLink: "",
       comment: "",
-      movie: {}
+      movie: {},
+
+      // 电影评论列表
+      commentList: []
     };
   },
   methods: {
-    onSubmit() {
-      console.log(this.comment);
-      this.$axios
-        .post("movie/" + 12 + "/comment/list", {
-          content: this.comment
-        })
-        .then(res => {
-          console.log(res);
-        })
-        .catch(err => {
-          console.error(err);
-        });
+    handelSubmitComment(movieId) {
+      if (this.isAuthenticated) {
+        this.$axios
+          .post("movie/" + movieId + "/comment/list", {
+            content: this.comment
+          })
+          .then(res => {
+            if (res.status == 200 && res.data.code == 0) {
+              this.$message.success("评论发表成功");
+              this.getMovieCommentList(this.movieId);
+            }
+          })
+          .catch(err => {
+            console.error(err);
+          });
+      } else {
+        this.$message.warning("请登录后再评论");
+      }
     },
     getMovie(movieId) {
       this.$axios
         .get("movie/" + movieId)
         .then(res => {
-          console.log(res);
           let movie = res.data.data;
           this.movie = {
             id: movie.id,
@@ -117,10 +145,46 @@ export default {
           this.videoLink = res.data.data.videoLink;
         })
         .catch(err => {});
+    },
+    getMovieCommentList(movieId) {
+      this.$axios
+        .get("movie/" + movieId + "/comment/list")
+        .then(res => {
+          if (res.status == 200 && res.data.code == 0) {
+            this.commentList = [];
+            res.data.data.forEach(comment => {
+              this.commentList.push({
+                id: comment.id,
+                content: comment.content,
+                commentor: comment.commentUser,
+                addtime: comment.addtime
+              });
+            });
+          }
+        })
+        .catch(err => {
+          console.error(err);
+        });
+    },
+    handelMovieCollect(movieId) {
+      console.log("收藏" + this.movie.id);
+      this.$axios
+        .post("movie/" + movieId + "/collect")
+        .then(res => {
+          this.$message({
+            type: "success",
+            message: "电影收藏成功"
+          });
+        })
+        .catch(err => {
+          console.error(err);
+        });
     }
   },
   created() {
-    this.getMovie(this.$route.params.movieId);
+    this.movieId = this.$route.params.movieId;
+    this.getMovie(this.movieId);
+    this.getMovieCommentList(this.movieId);
   }
 };
 </script>
@@ -147,6 +211,12 @@ export default {
   margin-right: 6px;
 }
 
+.btn {
+  margin-left: 0px;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
 li {
   display: list-item;
   text-align: -webkit-match-parent;
@@ -159,7 +229,8 @@ li {
 
 .comment-main {
   position: relative;
-  margin-left: 64px;
+  /* margin-left: 64px; */
+  text-align: left;
   border: 1px solid #dedede;
   border-radius: 2px;
   box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
