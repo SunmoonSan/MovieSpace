@@ -94,8 +94,14 @@ class ProfileView(Resource):
             }, msg='Success')
         return make_response(code=1, msg='用户不存在')
 
-    def put(self, user_id):
+    def put(self):
         params = request.json
+        resp = Auth.identify(request.headers)
+        if not resp['allow_access']:
+            return make_response(code=1, msg=resp['msg'])
+
+        user_id = resp['user_id']
+
         user = User.query.get(user_id)
         if user is not None:
             user.email = params['email']
@@ -103,7 +109,6 @@ class ProfileView(Resource):
             user.phone = params['phone']
             user.info = params['info']
             user.face = params['avatar']
-            db.session.add(user)
             db.session.commit()
             return make_response(code=0, msg='Success')
         return make_response(code=1, msg='用户不存在')

@@ -6,8 +6,12 @@
         <b-row>
           <b-col cols="4">
             <b-list-group>
-              <b-list-group-item>会员中心</b-list-group-item>
-              <b-list-group-item>修改密码</b-list-group-item>
+              <b-list-group-item variant="info">
+                <router-link to="/profile">会员中心</router-link>
+              </b-list-group-item>
+              <b-list-group-item>
+                <router-link to="/password/modify">修改密码</router-link>
+              </b-list-group-item>
               <b-list-group-item>评论记录</b-list-group-item>
               <b-list-group-item>登录日志</b-list-group-item>
               <b-list-group-item>收藏电影</b-list-group-item>
@@ -101,7 +105,7 @@ export default {
     onSubmit(evt) {
       evt.preventDefault();
       this.$axios
-        .put("user/" + 10, {
+        .put("profile", {
           email: this.form.email,
           name: this.form.name,
           phone: this.form.phone,
@@ -133,9 +137,9 @@ export default {
         this.show = true;
       });
     },
-    getProfile() {
+    getProfile(userId) {
       this.$axios
-        .get("/user/" + 10)
+        .get("profile")
         .then(res => {
           if (res.status == 200 && res.data.code == 0) {
             let user = res.data.data;
@@ -186,7 +190,9 @@ export default {
     }
   },
   created() {
-    this.getProfile();
+    console.log(this.$store.state.user);
+    const userId = this.$store.state.user.id;
+    this.getProfile(userId);
     this.getQiniuToken();
   }
 };
