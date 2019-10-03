@@ -5,13 +5,14 @@
       <div class="movie-detail">
         <b-row>
           <b-col cols="8">
-            <b-embed type="iframe" aspect="4by3" :src="videoLink" allowfullscreen></b-embed>
+            <b-embed type="iframe" aspect="4by3" :src="movie.videoLink" allowfullscreen></b-embed>
           </b-col>
           <b-col cols="4">
             <b-list-group>
               <b-list-group-item>
                 <b-button variant="outline-info" @click="handelMovieCollect(movie.id)">
-                  <i class="el-icon-star-off">收藏</i>
+                  <i v-if="isCollected" class="el-icon-star-on">已收藏</i>
+                  <i v-else class="el-icon-star-off">收藏</i>
                 </b-button>
               </b-list-group-item>
               <b-list-group-item>片名:{{movie.title}}</b-list-group-item>
@@ -21,7 +22,7 @@
               <b-list-group-item>上映时间: {{movie.releaseTime}}</b-list-group-item>
               <b-list-group-item>播放量:</b-list-group-item>
               <b-list-group-item>评论量:</b-list-group-item>
-              <b-list-group-item>影片简介: {{movie.info.substring(0, 120) + "..."}}</b-list-group-item>
+              <!-- <b-list-group-item>影片简介: {{movie.info.substring(0, 120) + "..."}}</b-list-group-item> -->
             </b-list-group>
           </b-col>
         </b-row>
@@ -100,8 +101,8 @@ export default {
     return {
       movieId: "",
 
-      title: "送我上青云",
-      videoLink: "",
+      isCollected: false,
+
       comment: "",
       movie: {},
 
@@ -140,11 +141,25 @@ export default {
             length: movie.length,
             area: movie.area,
             releaseTime: movie.releaseTime,
-            info: movie.info
+            info: movie.info,
+            videoLink: movie.videoLink
           };
-          this.videoLink = res.data.data.videoLink;
         })
         .catch(err => {});
+    },
+    isMovieCollected(movieId) {
+      if (this.isAuthenticated) {
+        this.$axios
+          .get("movie/" + movieId + "/isCollected")
+          .then(res => {
+            if (res.status == 200 && res.data.code == 0) {
+              this.isCollected = res.data.data.isCollected;
+            }
+          })
+          .catch(err => {
+            console.error(err);
+          });
+      }
     },
     getMovieCommentList(movieId) {
       this.$axios
@@ -167,13 +182,13 @@ export default {
         });
     },
     handelMovieCollect(movieId) {
-      console.log("收藏" + this.movie.id);
       this.$axios
         .post("movie/" + movieId + "/collect")
         .then(res => {
+          this.isMovieCollected(movieId);
           this.$message({
             type: "success",
-            message: "电影收藏成功"
+            message: this.isCollected ? "取消收藏成功" : "收藏成功"
           });
         })
         .catch(err => {
@@ -184,6 +199,7 @@ export default {
   created() {
     this.movieId = this.$route.params.movieId;
     this.getMovie(this.movieId);
+    this.isMovieCollected(this.movieId);
     this.getMovieCommentList(this.movieId);
   }
 };
