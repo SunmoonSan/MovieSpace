@@ -7,7 +7,7 @@
       </el-aside>
       <el-container>
         <el-button :plain="true" v-show="false">成功</el-button>
-        <tag-dialog :dialog="dialog" :tagForm="tagForm" @update="getTagList" />
+        <tag-dialog :dialog="dialog" :tagData="tagData" @update="getTagList" />
         <el-main>
           <el-form :inline="true" ref="add_data" class>
             <el-form-item class="btnRight">
@@ -91,15 +91,23 @@ export default {
         title: "",
         option: "edit"
       },
-      tagForm: {}
+      tagData: {}
     };
   },
   methods: {
+    handleAdd() {
+      this.dialog.show = true;
+      this.dialog.title = "添加";
+      this.dialog.option = "add";
+      this.tagData = {
+        name: ""
+      };
+    },
     handleEdit(index, row) {
       this.dialog.show = true;
       this.dialog.title = "编辑";
       this.dialog.option = "edit";
-      this.tagForm = {
+      this.tagData = {
         id: row.id,
         name: row.name
       };
@@ -124,10 +132,7 @@ export default {
         })
         .catch(res => {});
     },
-    handleAdd() {
-      this.dialog.show = true;
-      this.dialog.title = "添加";
-    },
+
     handleSizeChange(page_size) {
       console.log(page_size);
     },
@@ -161,8 +166,12 @@ export default {
 .btnRight {
   float: right;
 }
-.pagination {
-  text-align: right;
-  margin-top: 10px;
+
+.el-form-item {
+  margin-bottom: 2px;
+}
+
+.el-main {
+  line-height: 0px;
 }
 </style>

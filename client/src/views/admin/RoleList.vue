@@ -149,4 +149,12 @@ export default {
 .btnRight {
   float: right;
 }
+
+.el-form-item {
+  margin-bottom: 2px;
+}
+
+.el-main {
+  line-height: 0px;
+}
 </style>

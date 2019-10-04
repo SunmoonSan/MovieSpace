@@ -6,15 +6,17 @@
         <tree-menu />
       </el-aside>
       <el-container>
-        <el-button :plain="true" v-show="false">成功</el-button>
-        <movie-dialog :dialog="dialog" :movieForm="movieForm" @update="getMovieList" />
+        <movie-dialog :dialog="dialog" :movieData="movieData" @update="getMovieList" />
         <el-main>
-          <el-form :inline="true" ref="add_data" class>
-            <el-form-item class="btnRight">
-              <el-button type="primary" size="small" icon="view" @click="handleAdd()">添加</el-button>
-            </el-form-item>
-          </el-form>
-          <el-table :data="tableData" style="width: 100%">
+          <el-button
+            class="btnRight"
+            type="primary"
+            size="medium"
+            icon="el-icon-plus"
+            @click="handleAdd()"
+          >添加</el-button>
+
+          <el-table :data="tableData" style="width: 100%;">
             <el-table-column label="电影名称" width="160" align="center">
               <template slot-scope="scope">
                 <div slot="reference" class="name-wrapper">
@@ -54,10 +56,7 @@
 
             <el-table-column label="电影海报" width="160" height="120" align="center">
               <template slot-scope="scope">
-                <el-image
-                  style="width: 120px; height: 120px"
-                  :src="scope.row.logoLink"
-                >{{ scope.row.logoLink }}</el-image>
+                <el-image style="width: 120px; height: 120px" :src="scope.row.imageLink"></el-image>
               </template>
             </el-table-column>
 
@@ -101,7 +100,7 @@ export default {
         title: "",
         option: "edit"
       },
-      movieForm: {}
+      movieData: {}
     };
   },
   methods: {
@@ -109,19 +108,26 @@ export default {
       this.dialog.show = true;
       this.dialog.title = "添加电影";
       this.dialog.option = "add";
-      this.movieForm = {};
+      this.movieData = {
+        imageUrl: "",
+        videoUrl: ""
+      };
     },
     handleEdit(index, row) {
       this.dialog = {
         show: true,
-        title: "编辑预告",
+        title: "编辑电影",
         option: "edit"
       };
-      this.movieForm = {
+      this.movieData = {
         id: row.id,
         title: row.title,
         info: row.info,
-        imageUrl: row.logoLink
+        releaseData: row.releaseData,
+        length: row.length,
+        area: row.area,
+        imageUrl: row.imageLink,
+        videoUrl: row.videoLink
       };
     },
     handleDelete(index, row) {
@@ -163,7 +169,14 @@ export default {
 </script>
 
 <style scoped>
+.el-main {
+  line-height: 0px;
+}
+.el-form-item {
+  margin-bottom: 0px;
+}
 .btnRight {
   float: right;
+  margin-bottom: 10px;
 }
 </style>

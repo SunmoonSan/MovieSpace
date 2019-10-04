@@ -7,7 +7,7 @@
       </el-aside>
       <el-container>
         <el-button :plain="true" v-show="false">成功</el-button>
-        <preview-dialog :dialog="dialog" :previewForm="previewForm" @update="getPreviewList" />
+        <preview-dialog :dialog="dialog" :previewData="previewData" @update="getPreviewList" />
         <el-main>
           <el-form :inline="true" ref="add_data" class>
             <el-form-item class="btnRight">
@@ -88,7 +88,7 @@ export default {
         option: "edit",
         hidden: false
       },
-      previewForm: {}
+      previewData: {}
     };
   },
   methods: {
@@ -96,17 +96,18 @@ export default {
       this.dialog.show = true;
       this.dialog.title = "添加预告";
       this.dialog.option = "add";
-      this.dialog.hidden = false;
-      this.previewForm = {};
+      this.previewData = {
+        title: "",
+        imageUrl: ""
+      };
     },
     handleEdit(index, row) {
       this.dialog = {
         show: true,
         title: "编辑预告",
-        option: "edit",
-        hidden: true
+        option: "edit"
       };
-      this.previewForm = {
+      this.previewData = {
         id: row.id,
         title: row.title,
         imageUrl: row.url
@@ -131,9 +132,7 @@ export default {
       this.$axios
         .get("admin/preview/list")
         .then(res => {
-          console.log(res);
           if (res.status == 200 && res.data.code == 0) {
-            console.log(this.data);
             this.tableData = res.data.data;
           } else {
             this.tableData = [];
@@ -153,5 +152,13 @@ export default {
 <style scoped>
 .btnRight {
   float: right;
+}
+
+.el-form-item {
+  margin-bottom: 2px;
+}
+
+.el-main {
+  line-height: 0px;
 }
 </style>
