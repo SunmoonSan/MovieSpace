@@ -19,23 +19,25 @@
     <div class="movie-grid">
       <b-row v-for="(movies,index) of movieList" :key="index">
         <b-col v-for="movie in movies" :key="movie.id">
-          <b-card
-            no-body
-            class="overflow-hidden"
-            style="max-width: 300px; max-height: 200px;"
-            :key="movie.id"
-          >
-            <b-row no-gutters>
-              <b-col md="6">
-                <b-card-img :src="movie.imageLink" class="rounded-0"></b-card-img>
-              </b-col>
-              <b-col md="6">
-                <b-card-body :title="movie.title">
-                  <b-card-text>{{ movie.info.substring(0, 88) + "..." }}</b-card-text>
-                </b-card-body>
-              </b-col>
-            </b-row>
-          </b-card>
+          <router-link :to="{name: 'movie-detail', params:{movieId:movie.id}}">
+            <b-card
+              no-body
+              class="overflow-hidden"
+              style="max-width: 300px; max-height: 200px;"
+              :key="movie.id"
+            >
+              <b-row no-gutters>
+                <b-col md="6">
+                  <b-card-img :src="movie.imageLink" class="rounded-0"></b-card-img>
+                </b-col>
+                <b-col md="6">
+                  <b-card-body :title="movie.title">
+                    <b-card-text>{{ movie.info.substring(0, 88) + "..." }}</b-card-text>
+                  </b-card-body>
+                </b-col>
+              </b-row>
+            </b-card>
+          </router-link>
         </b-col>
       </b-row>
     </div>
@@ -48,18 +50,18 @@
 // @ is an alias to /src
 import HomeHeader from "@/components/Header.vue";
 import HomeFooter from "@/components/Footer.vue";
-import MovieCard from "@/components/MovieCard.vue";
 
 export default {
   components: {
     HomeHeader,
-    HomeFooter,
-    MovieCard
+    HomeFooter
   },
   data() {
     return {
       urls: [],
-      movieList: []
+      movieList: [],
+      // 传递到MovieDetail
+      show: false
     };
   },
   methods: {
@@ -88,6 +90,7 @@ export default {
                 id: element.id,
                 title: element.title,
                 imageLink: element.imageLink,
+                videoLink: element.videoLink,
                 info: element.info
               });
               if (movies.length == 4) {
