@@ -2,26 +2,40 @@
   <div class="preview-form">
     <el-button :plain="true" v-show="false">成功</el-button>
     <el-dialog :title="dialog.title" :visible.sync="dialog.show">
-      <el-form :model="previewForm" :rules="rules" ref="previewForm" label-width="100px">
+      <el-form :model="previewData" :rules="rules" ref="previewForm" label-width="100px">
         <el-form-item label="预告名称" prop="title">
-          <el-input v-model="previewForm.title"></el-input>
+          <el-input v-model="previewData.title"></el-input>
         </el-form-item>
-        <div class="preview-logo">
+        <el-form-item label="预告海报">
+          <el-upload
+            class="upload-video"
+            action="http://up-z2.qiniup.com"
+            :show-file-list="false"
+            :on-success="handleImageSuccess"
+            :before-upload="beforeImageUpload"
+            :data="postData"
+          >
+            <img v-if="previewData.imageUrl" :src="previewData.imageUrl" class="avatar" />
+            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            <!-- <img v-else :src="previewForm.imageUrl" class="avatar" /> -->
+          </el-upload>
+        </el-form-item>
+
+        <!-- <div class="preview-logo">
           <p class="preview-title">
             <i class="el-icon-upload"></i>预告海报
           </p>
           <el-upload
             class="avatar-uploader"
             action="http://up-z2.qiniup.com"
-            :show-file-list="false"
             :on-success="handleAvatarSuccess"
             :before-upload="beforeAvatarUpload"
             :data="postData"
           >
-            <img v-if="dialog.hidden===false" :src="imageUrl" class="avatar" />
-            <img v-else :src="previewForm.imageUrl" class="avatar" />
+            <img v-if="previewData.imageUrl" :src="previewData.imageUrl" class="avatar" />
+            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
-        </div>
+        </div>-->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="onCancel">取 消</el-button>
@@ -36,11 +50,10 @@ import * as qiniu from "qiniu-js";
 export default {
   props: {
     dialog: Object,
-    previewForm: Object
+    previewData: Object
   },
   data() {
     return {
-      imageUrl: "",
       rules: {
         tiele: [
           { required: true, message: "请输入标签名称", trigger: "blur" },
@@ -56,12 +69,13 @@ export default {
     onSubmit(formname) {
       this.$refs[formname].validate(valid => {
         if (valid) {
+          let data = {
+            title: this.previewData.title,
+            logoLink: this.previewData.imageUrl
+          };
           if (this.dialog.option == "edit") {
             this.$axios
-              .put("admin/preview/" + this.previewForm.id, {
-                title: this.previewForm.title,
-                logoLink: this.previewForm.imageUrl
-              })
+              .put("admin/preview/" + this.previewData.id, data)
               .then(res => {
                 if (res.status == 200 && res.data.code == 0) {
                   this.dialog.show = false;
@@ -71,7 +85,6 @@ export default {
                   });
                   this.$emit("update");
                 } else {
-                  console.log("编辑失败");
                   this.$message({
                     message: res.data.msg,
                     type: "error"
@@ -84,10 +97,7 @@ export default {
           } else {
             // 添加预告
             this.$axios
-              .post("admin/preview/list", {
-                title: this.previewForm.title,
-                logoLink: this.previewForm.imageUrl
-              })
+              .post("admin/preview/list", data)
               .then(res => {
                 if (res.status == 200 && res.data.code == 0) {
                   this.dialog.show = false;
@@ -97,7 +107,6 @@ export default {
                   });
                   this.$emit("update");
                 } else {
-                  console.log("添加失败");
                   this.$message({
                     message: res.data.msg,
                     type: "error"
@@ -129,12 +138,10 @@ export default {
           console.error(err);
         });
     },
-    handleAvatarSuccess(res, file) {
-      this.dialog.hidden = false;
-      this.imageUrl = "http://py32746gy.bkt.clouddn.com/" + res.key;
-      this.previewForm.imageUrl = "http://py32746gy.bkt.clouddn.com/" + res.key;
+    handleImageSuccess(res, file) {
+      this.previewData.imageUrl = "http://py32746gy.bkt.clouddn.com/" + res.key;
     },
-    beforeAvatarUpload(file) {
+    beforeImageUpload(file) {
       // const isJPG = file.type === "image/jpeg";
       const isLt2M = file.size / 1024 / 1024 < 2;
       // if (!isJPG) {

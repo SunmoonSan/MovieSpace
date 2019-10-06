@@ -3,14 +3,14 @@
     <el-button :plain="true" v-show="false">成功</el-button>
     <el-dialog :title="dialog.title" :visible.sync="dialog.show">
       <el-form
-        :model="tagForm"
+        :model="tagData"
         :rules="rules"
         ref="tagForm"
         label-width="100px"
         class="demo-tagForm"
       >
         <el-form-item label="标签名称" prop="name">
-          <el-input v-model="tagForm.name"></el-input>
+          <el-input v-model="tagData.name"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -25,7 +25,7 @@
 export default {
   props: {
     dialog: Object,
-    tagForm: Object
+    tagData: Object
   },
   data() {
     return {
@@ -39,16 +39,14 @@ export default {
   },
   methods: {
     onSubmit(formname) {
-      console.log("提交");
-      console.log(this.$refs["form"]);
       this.$refs[formname].validate(valid => {
         if (valid) {
-          console.log(this.tagForm);
+          let data = {
+            name: this.tagData.name
+          };
           if (this.dialog.option == "edit") {
             this.$axios
-              .put("admin/tag/" + this.tagForm.id, {
-                name: this.tagForm.name
-              })
+              .put("admin/tag/" + this.tagData.id, data)
               .then(res => {
                 if (res.status == 200 && res.data.code == 0) {
                   this.dialog.show = false;
@@ -58,7 +56,6 @@ export default {
                   });
                   this.$emit("update");
                 } else {
-                  console.log("编辑失败");
                   this.$message({
                     message: res.data.msg,
                     type: "error"
@@ -70,9 +67,7 @@ export default {
               });
           } else {
             this.$axios
-              .post("admin/tag/list", {
-                name: this.tagForm.name
-              })
+              .post("admin/tag/list", data)
               .then(res => {
                 if (res.status == 200 && res.data.code == 0) {
                   this.dialog.show = false;
@@ -93,10 +88,6 @@ export default {
                 console.error(err);
               });
           }
-          let url =
-            "admin/tag/" +
-            (this.dialog.option == "edit" ? this.tagForm.id : "list");
-          console.log(url);
         }
       });
     }
