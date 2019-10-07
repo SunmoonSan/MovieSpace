@@ -32,6 +32,7 @@
 <script>
 import MyHeader from "@/components/Header.vue";
 import MFooter from "@/components/Footer.vue";
+import jwt_decode from "jwt-decode";
 export default {
   components: {
     MyHeader,
@@ -77,6 +78,19 @@ export default {
                   message: "登录成功",
                   type: "success"
                 });
+                let token = res.data.data["token"];
+
+                localStorage.setItem("eleToken", token);
+
+                // token存储到vuex中
+                const decoded = jwt_decode(token);
+                // console.log(decoded);
+                this.$store.dispatch(
+                  "setAuthenticated",
+                  !this.isEmpty(decoded)
+                );
+                this.$store.dispatch("setUser", decoded.data);
+
                 this.$router.push("/");
               } else {
                 this.$message({
@@ -90,6 +104,14 @@ export default {
             });
         }
       });
+    },
+    isEmpty(value) {
+      return (
+        value === undefined ||
+        value === null ||
+        (typeof value === "object" && Object.keys(value).length === 0) ||
+        (typeof value === "string" && value.trim().length === 0)
+      );
     }
   }
 };

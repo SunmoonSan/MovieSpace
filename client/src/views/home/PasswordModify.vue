@@ -6,11 +6,17 @@
         <b-row>
           <b-col cols="4">
             <b-list-group>
-              <b-list-group-item>会员中心</b-list-group-item>
-              <b-list-group-item>修改密码</b-list-group-item>
+              <b-list-group-item>
+                <router-link :to="{name: 'profile'}">会员中心</router-link>
+              </b-list-group-item>
+              <b-list-group-item variant="info">
+                <router-link :to="{name: 'password-modify'}">修改密码</router-link>
+              </b-list-group-item>
               <b-list-group-item>评论记录</b-list-group-item>
               <b-list-group-item>登录日志</b-list-group-item>
-              <b-list-group-item>收藏电影</b-list-group-item>
+              <b-list-group-item>
+                <router-link :to="{name: 'movie-collections'}">电影收藏</router-link>
+              </b-list-group-item>
             </b-list-group>
           </b-col>
 
@@ -78,6 +84,8 @@ export default {
               type: "success",
               message: "密码修改成功"
             });
+          } else {
+            this.$message.error(res.data.msg);
           }
         })
         .catch(err => {

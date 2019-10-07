@@ -14,7 +14,9 @@
               </b-list-group-item>
               <b-list-group-item>评论记录</b-list-group-item>
               <b-list-group-item>登录日志</b-list-group-item>
-              <b-list-group-item>收藏电影</b-list-group-item>
+              <b-list-group-item>
+                <router-link :to="{name: 'movie-collections'}">电影收藏</router-link>
+              </b-list-group-item>
             </b-list-group>
           </b-col>
 
@@ -150,7 +152,6 @@ export default {
               info: user.info,
               avatar: user.avatar
             };
-            console.log(this.form);
             this.imageUrl = user.avatar;
           }
         })
@@ -174,23 +175,21 @@ export default {
     },
     handleAvatarSuccess(res, file) {
       this.imageUrl = "http://py32746gy.bkt.clouddn.com/" + res.key;
-      console.log(this.imageUrl);
     },
     beforeAvatarUpload(file) {
-      const isJPG = file.type === "image/jpeg";
+      // const isJPG = file.type === "image/jpeg";
       const isLt2M = file.size / 1024 / 1024 < 2;
 
-      if (!isJPG) {
-        this.$message.error("上传头像图片只能是 JPG 格式!");
-      }
+      // if (!isJPG) {
+      //   this.$message.error("上传头像图片只能是 JPG 格式!");
+      // }
       if (!isLt2M) {
         this.$message.error("上传头像图片大小不能超过 2MB!");
       }
-      return isJPG && isLt2M;
+      return isLt2M;
     }
   },
   created() {
-    console.log(this.$store.state.user);
     const userId = this.$store.state.user.id;
     this.getProfile(userId);
     this.getQiniuToken();

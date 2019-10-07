@@ -101,7 +101,7 @@ export default {
                   message: "注册成功",
                   type: "success"
                 });
-                this.$router.push("/");
+                this.$router.push("/login");
               } else {
                 this.$message({
                   message: res.data.msg,
