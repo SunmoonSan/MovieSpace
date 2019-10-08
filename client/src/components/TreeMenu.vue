@@ -42,6 +42,12 @@
         <span slot="title">管理员管理</span>
       </el-menu-item>
     </router-link>
+    <router-link :to="{name:'admin-log-admin'}">
+      <el-menu-item index="3">
+        <i class="el-icon-menu"></i>
+        <span slot="title">管理员登录日志管理</span>
+      </el-menu-item>
+    </router-link>
   </el-menu>
 </template>
 
