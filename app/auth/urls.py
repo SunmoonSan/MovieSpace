@@ -4,7 +4,9 @@
 from flask_restful import Api
 from app.auth import auth_api
 from app.auth.qiniu_views import QiniuToken
+from app.auth.token import AdminToken
 
 api = Api(app=auth_api, prefix='/auth/')
 
 api.add_resource(QiniuToken, 'qiniu')
+api.add_resource(AdminToken, 'admin/token')
